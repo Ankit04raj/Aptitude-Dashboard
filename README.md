@@ -30,52 +30,37 @@ It focuses on the latest TCS NQT pattern while remaining useful for other servic
 
 ---
 
-# 🖥 Dashboard Preview
 
-## 🏠 Home Dashboard
+## 🖥 Dashboard Preview
+
+### 🏠 Home Dashboard
 
 <p align="center">
-<img src="Aptitude-Dashboard/Dashboard.png" width="90%">
+  <img src="Dashboard.png" width="95%" alt="Dashboard">
 </p>
 
 ---
 
-## 🔢 Numerical Practice
+### 📚 Practice Hub
 
 <p align="center">
-<img src="screenshots/numerical.png" width="90%">
+  <img src="Practice-hub.png" width="95%" alt="Practice Hub">
 </p>
 
 ---
 
-## 🧠 Reasoning Practice
+### 📊 Analytics
 
 <p align="center">
-<img src="screenshots/reasoning.png" width="90%">
+  <img src="Analytics.png" width="95%" alt="Analytics">
 </p>
 
 ---
 
-## 📝 Verbal Practice
+### 📝 Mock Test
 
 <p align="center">
-<img src="screenshots/verbal.png" width="90%">
-</p>
-
----
-
-## 📊 Analytics Dashboard
-
-<p align="center">
-<img src="screenshots/analytics.png" width="90%">
-</p>
-
----
-
-## ⏱ Mock Test Interface
-
-<p align="center">
-<img src="screenshots/mock-test.png" width="90%">
+  <img src="Mock-Test.png" width="95%" alt="Mock Test">
 </p>
 
 
