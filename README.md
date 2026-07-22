@@ -35,7 +35,7 @@ It focuses on the latest TCS NQT pattern while remaining useful for other servic
 ## 🏠 Home Dashboard
 
 <p align="center">
-<img src="screenshots/home-dashboard.png" width="90%">
+<img src="    Aptitude-Dashboard/Dashboard.png" width="90%">
 </p>
 
 ---
