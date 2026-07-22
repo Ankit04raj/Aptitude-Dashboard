@@ -1,0 +1,2109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NQT.OS — Placement Prep Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0B0E13; --panel:#12161F; --panel-hi:#1A2029; --panel-hi2:#212938;
+  --border:#242C39; --text:#E7ECF5; --muted:#8993A6; --muted2:#5E687C;
+  --accent:#37D6C4; --accent-dim:#1E4844; --accent2:#5B8CFF; --accent2-dim:#1B2C4D;
+  --warm:#F2A93B; --warm-dim:#4A3A1C; --danger:#F0556B; --danger-dim:#4A1F28;
+  --good:#3ED598; --good-dim:#1B3D31; --purple:#B08BFF; --purple-dim:#2E1F4D;
+  --radius:14px; --radius-sm:9px;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; -webkit-font-smoothing:antialiased;}
+#root{display:flex; min-height:100vh;}
+.mono{font-family:'IBM Plex Mono',monospace;}
+.display{font-family:'Space Grotesk',sans-serif;}
+a{color:inherit;}
+
+.sidebar{width:230px; flex-shrink:0; background:var(--panel); border-right:1px solid var(--border); display:flex; flex-direction:column; padding:20px 14px; position:sticky; top:0; height:100vh; overflow-y:auto;}
+.logo{font-family:'Space Grotesk'; font-weight:700; font-size:19px;}
+.logo span{color:var(--accent);}
+.logo-sub{font-size:10.5px; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:18px;}
+.xp-mini{background:var(--panel-hi); border:1px solid var(--border); border-radius:10px; padding:10px 12px; margin-bottom:16px;}
+.xp-mini-top{display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom:6px;}
+.xp-bar{height:6px; background:var(--panel-hi2); border-radius:3px; overflow:hidden;}
+.xp-bar-fill{height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2)); border-radius:3px; transition:width .4s;}
+.nav-group-label{font-size:10px; color:var(--muted2); text-transform:uppercase; letter-spacing:1.2px; margin:14px 6px 6px;}
+.nav-item{display:flex; align-items:center; gap:9px; padding:9px 11px; border-radius:9px; margin-bottom:2px; color:var(--muted); font-size:13.5px; font-weight:500; cursor:pointer; border:1px solid transparent; transition:all .15s;}
+.nav-item:hover{background:var(--panel-hi); color:var(--text);}
+.nav-item.active{background:var(--accent-dim); color:var(--accent); border-color:#2A6A63;}
+.nav-dot{width:6px; height:6px; border-radius:50%; background:currentColor; flex-shrink:0;}
+.sidebar-foot{margin-top:auto; padding-top:12px; border-top:1px solid var(--border); font-size:10.5px; color:var(--muted2); line-height:1.6;}
+
+.main{flex:1; padding:30px 38px 60px; max-width:1180px; overflow-x:hidden;}
+.view{display:none;}
+.view.active{display:block; animation:fadeIn .25s ease;}
+@keyframes fadeIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+h1.page-title{font-family:'Space Grotesk'; font-size:25px; font-weight:700; margin-bottom:4px;}
+.page-sub{color:var(--muted); font-size:13.5px; margin-bottom:26px;}
+.crumb{font-size:12px; color:var(--muted2); margin-bottom:6px;}
+.crumb span{color:var(--accent); cursor:pointer;}
+
+.grid{display:grid; gap:14px;}
+.grid-5{grid-template-columns:repeat(5,1fr);}
+.grid-4{grid-template-columns:repeat(4,1fr);}
+.grid-3{grid-template-columns:repeat(3,1fr);}
+.grid-2{grid-template-columns:repeat(2,1fr);}
+.card{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px;}
+.card-tight{padding:14px 16px;}
+.stat-label{font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;}
+.stat-value{font-family:'IBM Plex Mono'; font-size:26px; font-weight:600;}
+.stat-note{font-size:11.5px; color:var(--muted); margin-top:5px;}
+
+.section-title{font-family:'Space Grotesk'; font-size:14.5px; font-weight:600; margin-bottom:13px; display:flex; align-items:center; justify-content:space-between;}
+.section-title .see-all{font-family:'Inter'; font-size:11.5px; color:var(--accent); font-weight:500; cursor:pointer;}
+
+.bar-row{display:flex; align-items:center; gap:10px; margin-bottom:12px;}
+.bar-row:last-child{margin-bottom:0;}
+.bar-label{width:150px; font-size:12.5px; color:var(--muted); flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.bar-track{flex:1; height:7px; background:var(--panel-hi); border-radius:4px; overflow:hidden;}
+.bar-fill{height:100%; border-radius:4px; transition:width .4s ease;}
+.bar-pct{width:46px; text-align:right; font-family:'IBM Plex Mono'; font-size:12px; color:var(--muted); flex-shrink:0;}
+
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:7px; padding:10px 18px; border-radius:10px; border:1px solid var(--border); background:var(--panel-hi); color:var(--text); font-size:13.5px; font-weight:600; cursor:pointer; transition:all .15s; font-family:'Inter';}
+.btn:hover{border-color:var(--accent); background:#1D2530;}
+.btn-primary{background:var(--accent); color:#052824; border-color:var(--accent);}
+.btn-primary:hover{background:#4FE3D1; border-color:#4FE3D1;}
+.btn-accent2{background:var(--accent2); color:#0A1226; border-color:var(--accent2);}
+.btn-danger{background:var(--danger); color:#2A0810; border-color:var(--danger);}
+.btn-ghost{background:transparent;}
+.btn-block{width:100%;}
+.btn-sm{padding:7px 13px; font-size:12px;}
+.btn:disabled{opacity:.4; cursor:not-allowed;}
+
+.pill{font-size:10px; padding:2px 8px; border-radius:20px; font-weight:600; text-transform:uppercase; letter-spacing:.4px; white-space:nowrap;}
+.pill-good{background:var(--good-dim); color:var(--good);}
+.pill-warm{background:var(--warm-dim); color:var(--warm);}
+.pill-bad{background:var(--danger-dim); color:var(--danger);}
+.pill-muted{background:var(--panel-hi); color:var(--muted); border:1px solid var(--border);}
+.pill-accent2{background:var(--accent2-dim); color:var(--accent2);}
+.pill-purple{background:var(--purple-dim); color:var(--purple);}
+
+.tabs{display:flex; gap:6px; border-bottom:1px solid var(--border); margin-bottom:20px; overflow-x:auto;}
+.tab{padding:10px 4px; margin-right:18px; font-size:13.5px; font-weight:600; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap;}
+.tab.active{color:var(--text); border-color:var(--accent);}
+
+.topic-list{display:flex; flex-direction:column; gap:7px;}
+.topic-row{display:flex; align-items:center; justify-content:space-between; padding:13px 15px; background:var(--panel-hi); border:1px solid var(--border); border-radius:10px; cursor:pointer; transition:all .15s; gap:12px;}
+.topic-row:hover{border-color:var(--accent);}
+.topic-name{font-size:13.5px; font-weight:600;}
+.topic-meta{font-size:11px; color:var(--muted); margin-top:2px;}
+.topic-acc{font-family:'IBM Plex Mono'; font-size:12.5px; font-weight:600; flex-shrink:0;}
+
+.modal-bg{position:fixed; inset:0; background:rgba(5,7,10,.72); display:none; align-items:center; justify-content:center; z-index:50; padding:20px;}
+.modal-bg.show{display:flex;}
+.modal{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:26px; max-width:460px; width:100%; max-height:85vh; overflow-y:auto;}
+.modal h2{font-family:'Space Grotesk'; font-size:18px; margin-bottom:6px;}
+.modal .sub{font-size:12.5px; color:var(--muted); margin-bottom:18px;}
+.field-label{font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.6px; margin-bottom:7px; margin-top:14px;}
+.field-label:first-child{margin-top:0;}
+.chip-row{display:flex; flex-wrap:wrap; gap:7px;}
+.chip{padding:7px 13px; border-radius:20px; border:1px solid var(--border); background:var(--panel-hi); font-size:12.5px; cursor:pointer; transition:all .15s;}
+.chip.selected{background:var(--accent-dim); border-color:var(--accent); color:var(--accent);}
+.num-input{width:100%; padding:9px 12px; background:var(--panel-hi); border:1px solid var(--border); border-radius:9px; color:var(--text); font-family:'IBM Plex Mono'; font-size:13.5px;}
+.modal-actions{display:flex; gap:10px; margin-top:22px;}
+
+.console-bar{display:flex; align-items:center; justify-content:space-between; background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:14px 20px; margin-bottom:18px; gap:14px; flex-wrap:wrap;}
+.ring-wrap{position:relative; width:50px; height:50px; flex-shrink:0;}
+.ring-wrap svg{transform:rotate(-90deg);}
+.console-left{display:flex; align-items:center; gap:12px;}
+.console-mid{flex:1; display:flex; justify-content:center; gap:4px; flex-wrap:wrap; min-width:120px;}
+.qdot{width:8px; height:8px; border-radius:50%; background:var(--panel-hi); border:1px solid var(--border);}
+.qdot.answered{background:var(--accent); border-color:var(--accent);}
+.qdot.current{background:var(--warm); border-color:var(--warm); transform:scale(1.3);}
+.qdot.flagged{background:var(--purple); border-color:var(--purple);}
+.timer-readout{font-family:'IBM Plex Mono'; font-size:19px; font-weight:600;}
+.timer-readout.low{color:var(--danger);}
+.speed-dot{width:9px; height:9px; border-radius:50%; display:inline-block; margin-right:5px;}
+
+.q-card{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:26px 28px;}
+.q-meta-row{display:flex; gap:7px; margin-bottom:15px; flex-wrap:wrap; align-items:center;}
+.q-text{font-size:16.5px; font-weight:500; line-height:1.55; margin-bottom:22px;}
+.opt{display:flex; align-items:center; gap:12px; padding:13px 15px; border:1px solid var(--border); border-radius:10px; margin-bottom:9px; cursor:pointer; transition:all .15s; font-size:14px;}
+.opt:hover{border-color:var(--accent);}
+.opt.selected{border-color:var(--accent); background:var(--accent-dim);}
+.opt.correct{border-color:var(--good); background:var(--good-dim);}
+.opt.incorrect{border-color:var(--danger); background:var(--danger-dim);}
+.opt-letter{width:22px; height:22px; border-radius:6px; background:var(--panel-hi); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono'; font-size:11px; flex-shrink:0;}
+.opt.selected .opt-letter{background:var(--accent); color:#052824; border-color:var(--accent);}
+.q-tools{display:flex; gap:8px; margin-top:16px; flex-wrap:wrap;}
+.q-nav{display:flex; justify-content:space-between; gap:10px; margin-top:20px; flex-wrap:wrap;}
+
+.reveal-box{margin-top:14px; padding:14px 16px; background:var(--panel-hi); border:1px solid var(--border); border-radius:10px; font-size:13px; color:var(--muted); line-height:1.65; display:none;}
+.reveal-box.show{display:block;}
+.reveal-box b{color:var(--text);}
+.reveal-box .step{margin-bottom:5px; padding-left:16px; position:relative;}
+.reveal-box .step:before{content:"→"; position:absolute; left:0; color:var(--accent);}
+
+textarea.note-area{width:100%; background:var(--panel-hi); border:1px solid var(--border); border-radius:9px; color:var(--text); padding:10px 12px; font-family:'Inter'; font-size:13px; min-height:60px; resize:vertical; margin-top:8px;}
+
+.heatmap{display:grid; grid-template-columns:repeat(14,1fr); gap:4px;}
+.heat-cell{aspect-ratio:1; border-radius:3px; background:var(--panel-hi);}
+
+.plan-day{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; margin-bottom:12px;}
+.plan-day-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+.plan-day-title{font-family:'Space Grotesk'; font-weight:700; font-size:14.5px;}
+.plan-task{display:flex; align-items:center; gap:10px; padding:7px 0; font-size:13px; border-bottom:1px solid var(--border);}
+.plan-task:last-child{border-bottom:none;}
+.plan-task input{accent-color:var(--accent); width:15px; height:15px;}
+.plan-task.done label{text-decoration:line-through; color:var(--muted2);}
+.plan-slot{font-size:10px; text-transform:uppercase; letter-spacing:.5px; color:var(--muted2); width:70px; flex-shrink:0;}
+
+.badge-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(90px,1fr)); gap:10px;}
+.badge{text-align:center; padding:14px 8px; border-radius:10px; border:1px solid var(--border); background:var(--panel-hi); opacity:.35;}
+.badge.earned{opacity:1; border-color:var(--warm); background:var(--warm-dim);}
+.badge .ic{font-size:22px; margin-bottom:6px;}
+.badge .n{font-size:10px; color:var(--muted); font-weight:600;}
+
+.ai-box{background:linear-gradient(135deg,var(--accent2-dim),var(--purple-dim)); border:1px solid #2E3A5C; border-radius:var(--radius); padding:18px 20px;}
+.ai-box .lbl{font-size:10.5px; text-transform:uppercase; letter-spacing:1px; color:var(--accent2); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;}
+.ai-loading{color:var(--muted); font-size:13px;}
+
+::-webkit-scrollbar{width:8px;}
+::-webkit-scrollbar-thumb{background:var(--border); border-radius:4px;}
+@media(max-width:900px){
+  #root{flex-direction:column;}
+  .sidebar{width:100%; height:auto; position:relative; flex-direction:row; overflow-x:auto; padding:12px;}
+  .sidebar-foot,.xp-mini,.nav-group-label{display:none;}
+  .main{padding:18px;}
+  .grid-5,.grid-4,.grid-3,.grid-2{grid-template-columns:1fr 1fr;}
+  .console-mid{display:none;}
+}
+</style>
+</head>
+<body>
+<div id="root">
+  <div class="sidebar">
+    <div class="logo">NQT<span>.OS</span></div>
+    <div class="logo-sub">Placement Prep Platform</div>
+    <div class="xp-mini">
+      <div class="xp-mini-top"><span id="sb-level">Level 1</span><span class="mono" id="sb-xp">0 XP</span></div>
+      <div class="xp-bar"><div class="xp-bar-fill" id="sb-xp-fill" style="width:0%;"></div></div>
+    </div>
+    <div class="nav-group-label">Overview</div>
+    <div class="nav-item active" data-nav="dashboard"><span class="nav-dot"></span>Dashboard</div>
+    <div class="nav-item" data-nav="analytics"><span class="nav-dot"></span>Analytics</div>
+    <div class="nav-item" data-nav="planner"><span class="nav-dot"></span>Study Planner</div>
+    <div class="nav-group-label">Practice</div>
+    <div class="nav-item" data-nav="practice"><span class="nav-dot"></span>Practice Hub</div>
+    <div class="nav-item" data-nav="mock"><span class="nav-dot"></span>Mock Test</div>
+    <div class="nav-item" data-nav="revision"><span class="nav-dot"></span>Revision</div>
+    <div class="nav-item" data-nav="formulas"><span class="nav-dot"></span>Formula Cards</div>
+    <div class="nav-group-label">Verbal AI</div>
+    <div class="nav-item" data-nav="emailwriting"><span class="nav-dot"></span>Email Writing</div>
+    <div class="nav-item" data-nav="passagerecall"><span class="nav-dot"></span>Passage Recall</div>
+    <div class="nav-group-label">You</div>
+    <div class="nav-item" data-nav="badges"><span class="nav-dot"></span>Badges</div>
+    <div class="sidebar-foot">TCS NQT Foundation<br>Numerical 20/25m · Verbal 25/26m · Reasoning 20/25m<br>Data saved locally, per device.</div>
+  </div>
+
+  <div class="main">
+
+    <!-- ============ DASHBOARD ============ -->
+    <div class="view active" id="view-dashboard">
+      <h1 class="page-title">Dashboard</h1>
+      <div class="page-sub">Your placement readiness console.</div>
+
+      <div class="grid grid-5" style="margin-bottom:16px;">
+        <div class="card stat-card"><div class="stat-label">Questions Solved</div><div class="stat-value" id="d-solved">0</div><div class="stat-note" id="d-today">0 today</div></div>
+        <div class="card stat-card"><div class="stat-label">Accuracy</div><div class="stat-value" id="d-accuracy">—</div><div class="stat-note">All-time</div></div>
+        <div class="card stat-card"><div class="stat-label">Streak</div><div class="stat-value" id="d-streak">0<span style="font-size:13px;color:var(--muted);">d</span></div><div class="stat-note" id="d-streak-note">Start today</div></div>
+        <div class="card stat-card"><div class="stat-label">Study Time</div><div class="stat-value" id="d-time">0h</div><div class="stat-note">Total in-app</div></div>
+        <div class="card stat-card"><div class="stat-label">Mock Tests</div><div class="stat-value" id="d-mocks">0</div><div class="stat-note">Completed</div></div>
+      </div>
+
+      <div class="grid grid-3" style="margin-bottom:16px; align-items:start;">
+        <div class="card" style="grid-column:span 2;">
+          <div class="section-title">Company readiness — predicted probability</div>
+          <div class="grid grid-3" id="readiness-cards"></div>
+        </div>
+        <div class="card">
+          <div class="section-title">Today's goal</div>
+          <div id="today-goal-body"></div>
+          <button class="btn btn-sm" style="margin-top:10px;" onclick="openGoalModal()">Edit daily goal</button>
+        </div>
+      </div>
+
+      <div class="grid grid-2" style="margin-bottom:16px; align-items:start;">
+        <div class="card">
+          <div class="section-title">Section readiness <span class="pill pill-muted">last mock</span></div>
+          <div id="readiness-bars"></div>
+        </div>
+        <div class="card">
+          <div class="section-title">Weak topics <span class="pill pill-muted">min 5 attempts</span></div>
+          <div id="weak-topics" style="font-size:13px; color:var(--muted);">Practice a few topics to see weak areas here.</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div class="section-title">Activity heatmap <span class="pill pill-muted" id="heatmap-total">0 active days</span></div>
+        <div class="heatmap" id="heatmap"></div>
+      </div>
+
+      <div class="ai-box" style="margin-bottom:16px;">
+        <div class="lbl">⚡ AI Recommendation</div>
+        <div id="ai-recommendation"><span class="ai-loading">Solve a few questions to unlock personalized recommendations.</span></div>
+        <button class="btn btn-sm" style="margin-top:12px;" onclick="fetchAIRecommendation()">Refresh recommendation</button>
+      </div>
+
+      <div style="display:flex; gap:12px; flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="nav('mock')">Start a mock test →</button>
+        <button class="btn" onclick="nav('practice')">Practice Hub</button>
+        <button class="btn" onclick="nav('revision')">Today's revision (<span id="rev-count-inline">0</span>)</button>
+      </div>
+    </div>
+
+    <!-- ============ PRACTICE HUB ============ -->
+    <div class="view" id="view-practice">
+      <h1 class="page-title">Practice Hub</h1>
+      <div class="page-sub">Unlimited procedurally-generated questions on core topics, curated sets on the rest.</div>
+
+      <div class="tabs">
+        <div class="tab active" data-ptab="topic">By Topic</div>
+        <div class="tab" data-ptab="modes">Practice Modes</div>
+        <div class="tab" data-ptab="custom">Custom Practice</div>
+      </div>
+
+      <div id="ptab-topic">
+        <div id="practice-sections"></div>
+      </div>
+
+      <div id="ptab-modes" style="display:none;">
+        <div class="grid grid-3">
+          <div class="card" style="cursor:pointer;" onclick="launchMode('mixed')">
+            <div class="section-title">Mixed Practice</div>
+            <div style="font-size:12.5px; color:var(--muted);">Random mix across all three sections. Untimed by default.</div>
+          </div>
+          <div class="card" style="cursor:pointer;" onclick="launchMode('weak')">
+            <div class="section-title">Weak Topic Practice</div>
+            <div style="font-size:12.5px; color:var(--muted);">Auto-picks your lowest-accuracy topics (min 5 attempts).</div>
+          </div>
+          <div class="card" style="cursor:pointer;" onclick="launchMode('wrong')">
+            <div class="section-title">Wrong Questions Practice</div>
+            <div style="font-size:12.5px; color:var(--muted);" id="wrong-count-note">Re-attempt everything you've gotten wrong.</div>
+          </div>
+          <div class="card" style="cursor:pointer;" onclick="launchMode('bookmarked')">
+            <div class="section-title">Bookmarked Practice</div>
+            <div style="font-size:12.5px; color:var(--muted);" id="bookmark-count-note">Everything you've flagged for later.</div>
+          </div>
+          <div class="card" style="cursor:pointer;" onclick="launchMode('expected')">
+            <div class="section-title">Expected Questions</div>
+            <div style="font-size:12.5px; color:var(--muted);">High-frequency subtopics only — best ROI before an exam.</div>
+          </div>
+          <div class="card" style="cursor:pointer;" onclick="launchMode('rapidfire')">
+            <div class="section-title">Rapid Fire Mode</div>
+            <div style="font-size:12.5px; color:var(--muted);">15 seconds per question. Speed training.</div>
+          </div>
+          <div class="card" style="cursor:pointer;" onclick="launchMode('adaptive')">
+            <div class="section-title">Adaptive Practice</div>
+            <div style="font-size:12.5px; color:var(--muted);">Difficulty adjusts to your running accuracy in real time.</div>
+          </div>
+          <div class="card" style="cursor:pointer;" onclick="startStopwatch()">
+            <div class="section-title">Stopwatch Mode</div>
+            <div style="font-size:12.5px; color:var(--muted);">No countdown — just tracks your solving speed.</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="ptab-custom" style="display:none;">
+        <div class="card">
+          <div class="field-label">Section(s)</div>
+          <div class="chip-row" id="custom-sections"></div>
+          <div class="field-label">Difficulty</div>
+          <div class="chip-row" id="custom-diff"></div>
+          <div class="field-label">Question count</div>
+          <div class="chip-row" id="custom-count"></div>
+          <div class="field-label">Time limit</div>
+          <div class="chip-row" id="custom-time"></div>
+          <button class="btn btn-primary" style="margin-top:20px;" onclick="startCustomPractice()">Start custom practice</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ TOPIC DETAIL ============ -->
+    <div class="view" id="view-topic">
+      <div class="crumb"><span onclick="nav('practice')">Practice Hub</span> / <span id="topic-crumb-name">Topic</span></div>
+      <h1 class="page-title" id="topic-detail-title">Topic</h1>
+      <div class="page-sub" id="topic-detail-sub">Subtopic overview</div>
+
+      <div class="grid grid-4" style="margin-bottom:16px;">
+        <div class="card stat-card"><div class="stat-label">Solved / Remaining</div><div class="stat-value" id="t-solved">0</div><div class="stat-note" id="t-remaining">—</div></div>
+        <div class="card stat-card"><div class="stat-label">Accuracy</div><div class="stat-value" id="t-accuracy">—</div><div class="stat-note" id="t-best-time">Best time —</div></div>
+        <div class="card stat-card"><div class="stat-label">Avg. Time / Q</div><div class="stat-value" id="t-avgtime">—</div><div class="stat-note" id="t-recommended">Recommended —</div></div>
+        <div class="card stat-card"><div class="stat-label">Completion</div><div class="stat-value" id="t-completion">0%</div><div class="stat-note" id="t-weightage">Expected weightage —</div></div>
+      </div>
+
+      <div class="grid grid-2" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="section-title">Difficulty distribution</div>
+          <div id="t-diff-dist"></div>
+        </div>
+        <div class="card">
+          <div class="section-title">Strong / Weak subtopics</div>
+          <div id="t-strong-weak" style="font-size:12.5px; color:var(--muted);"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div class="section-title">Timed practice</div>
+        <div class="chip-row" id="topic-timer-picks"></div>
+        <button class="btn btn-primary btn-sm" style="margin-top:14px;" onclick="startTopicTimedPractice()">Start timed session</button>
+        <button class="btn btn-sm" style="margin-top:14px; margin-left:8px;" onclick="startTopicUntimed()">Practice untimed</button>
+      </div>
+    </div>
+
+    <!-- ============ QUESTION RUNNER (shared: mock / practice / custom / topic) ============ -->
+    <div class="view" id="view-run">
+      <div class="console-bar" id="run-console">
+        <div class="console-left">
+          <div class="ring-wrap">
+            <svg width="50" height="50" viewBox="0 0 50 50">
+              <circle cx="25" cy="25" r="21" fill="none" stroke="var(--panel-hi)" stroke-width="5"/>
+              <circle id="ring-progress" cx="25" cy="25" r="21" fill="none" stroke="var(--accent)" stroke-width="5" stroke-linecap="round" stroke-dasharray="132" stroke-dashoffset="0"/>
+            </svg>
+          </div>
+          <div>
+            <div style="font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:1px;" id="run-label">Section</div>
+            <div class="timer-readout" id="run-timer">25:00</div>
+          </div>
+        </div>
+        <div class="console-mid" id="run-qdots"></div>
+        <div style="font-family:'IBM Plex Mono'; font-size:12.5px; color:var(--muted);" id="run-counter">Q1 / 20</div>
+      </div>
+
+      <div class="q-card">
+        <div class="q-meta-row">
+          <span class="pill pill-muted" id="run-topic-pill">Topic</span>
+          <span class="pill pill-muted" id="run-diff-pill">Medium</span>
+          <span class="pill pill-accent2" id="run-freq-pill">Medium freq</span>
+          <span class="pill pill-purple" id="run-pyq-pill">PYQ 0%</span>
+          <span class="pill pill-muted" style="margin-left:auto;" id="run-qtimer"><span class="speed-dot" style="background:var(--good);"></span>0:00</span>
+        </div>
+        <div class="q-text" id="run-q-text">Question text</div>
+        <div id="run-options"></div>
+
+        <div class="q-tools">
+          <button class="btn btn-sm" id="run-bookmark-btn" onclick="toggleBookmark()">☆ Bookmark</button>
+          <button class="btn btn-sm" onclick="toggleReveal('hint')">💡 Hint</button>
+          <button class="btn btn-sm" onclick="toggleReveal('formula')">∑ Formula</button>
+          <button class="btn btn-sm" onclick="toggleReveal('shortcut')">⚡ Shortcut</button>
+          <button class="btn btn-sm" onclick="toggleReveal('notes')">✎ Notes</button>
+          <button class="btn btn-sm" onclick="toggleReveal('discussion')">💬 Related</button>
+          <button class="btn btn-sm" onclick="reportQuestion()">⚑ Report</button>
+        </div>
+
+        <div class="reveal-box" id="reveal-hint"></div>
+        <div class="reveal-box" id="reveal-formula"></div>
+        <div class="reveal-box" id="reveal-shortcut"></div>
+        <div class="reveal-box" id="reveal-notes"><textarea class="note-area" id="note-input" placeholder="Your notes on this question..." onchange="saveNote()"></textarea></div>
+        <div class="reveal-box" id="reveal-discussion"></div>
+        <div class="reveal-box" id="reveal-explain"></div>
+
+        <div class="q-nav">
+          <div>
+            <button class="btn btn-sm" id="run-prev-btn" onclick="prevQuestion()">← Previous</button>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-danger btn-sm" id="run-submit-btn" onclick="submitRunEarly()">Submit</button>
+            <button class="btn btn-primary" id="run-next-btn" onclick="nextRunQuestion()">Next →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ RESULT ============ -->
+    <div class="view" id="view-result">
+      <h1 class="page-title">Result</h1>
+      <div class="page-sub" id="result-sub">Session summary</div>
+
+      <div class="grid grid-3" style="margin-bottom:16px; align-items:stretch;">
+        <div class="card" style="grid-column:span 1;">
+          <div class="stat-label">Score</div>
+          <div class="stat-value" style="font-size:34px;"><span id="result-score-num">0</span><span style="font-size:16px; color:var(--muted);"> / <span id="result-score-total">0</span></span></div>
+          <div class="stat-note" id="result-time">Time —</div>
+        </div>
+        <div class="card" style="grid-column:span 2;">
+          <div class="section-title">Accuracy & speed</div>
+          <div class="bar-row"><div class="bar-label">Accuracy</div><div class="bar-track"><div class="bar-fill" id="result-acc-bar" style="background:var(--accent); width:0%;"></div></div><div class="bar-pct" id="result-acc-pct">0%</div></div>
+          <div class="bar-row"><div class="bar-label">Avg time / Q</div><div class="bar-track"><div class="bar-fill" id="result-speed-bar" style="background:var(--accent2); width:0%;"></div></div><div class="bar-pct" id="result-speed-pct">—</div></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div class="section-title">Topic breakdown</div>
+        <div id="result-topics"></div>
+      </div>
+
+      <div class="ai-box" style="margin-bottom:16px;" id="result-ai-box">
+        <div class="lbl">⚡ AI Analysis</div>
+        <div id="result-ai-content"><span class="ai-loading">Generating analysis...</span></div>
+      </div>
+
+      <div class="section-title" style="margin-bottom:12px;">Review</div>
+      <div id="result-review"></div>
+
+      <div style="display:flex; gap:12px; margin-top:20px;">
+        <button class="btn btn-primary" onclick="nav('mock')">Take another test</button>
+        <button class="btn" onclick="nav('dashboard')">Back to dashboard</button>
+      </div>
+    </div>
+
+    <!-- ============ MOCK TEST SETUP ============ -->
+    <div class="view" id="view-mock">
+      <h1 class="page-title">Mock Test</h1>
+      <div class="page-sub">Exact TCS NQT Foundation pattern — section-locked, no back navigation, auto-submit.</div>
+
+      <div class="tabs">
+        <div class="tab active" data-mtab="section">Single Section</div>
+        <div class="tab" data-mtab="full">Full Foundation Mock</div>
+      </div>
+
+      <div id="mtab-section">
+        <div id="section-picks"></div>
+        <div class="rules-box" style="background:var(--panel-hi); border:1px solid var(--border); border-radius:10px; padding:16px 18px; margin:16px 0; font-size:12.5px; color:var(--muted);">
+          The timer runs for the whole section. Once you move to the next question you cannot go back. Auto-submits at zero.
+        </div>
+        <button class="btn btn-primary" onclick="startMock('section')">Start section test</button>
+      </div>
+
+      <div id="mtab-full" style="display:none;">
+        <div class="card">
+          <div class="section-title">Complete Foundation Mock</div>
+          <div style="font-size:13px; color:var(--muted); margin-bottom:14px;">Numerical (20Q/25m) → Verbal (25Q/26m) → Reasoning (20Q/25m), back to back, each section locked once started. Total ≈76 minutes.</div>
+          <button class="btn btn-primary" onclick="startMock('full')">Start full mock</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ REVISION ============ -->
+    <div class="view" id="view-revision">
+      <h1 class="page-title">Revision</h1>
+      <div class="page-sub">Spaced repetition — wrong questions resurface at +1, +3, +7 days.</div>
+
+      <div class="grid grid-3" style="margin-bottom:16px;">
+        <div class="card stat-card"><div class="stat-label">Due Today</div><div class="stat-value" id="rev-today-count">0</div></div>
+        <div class="card stat-card"><div class="stat-label">Bookmarked</div><div class="stat-value" id="rev-bookmark-count">0</div></div>
+        <div class="card stat-card"><div class="stat-label">Mistake Notebook</div><div class="stat-value" id="rev-mistake-count">0</div></div>
+      </div>
+
+      <button class="btn btn-primary" style="margin-bottom:20px;" onclick="startRevisionSession()">Start today's revision</button>
+
+      <div class="section-title">Upcoming revision calendar</div>
+      <div id="rev-calendar" style="margin-bottom:20px;"></div>
+
+      <div class="section-title">Mistake notebook</div>
+      <div id="mistake-notebook"></div>
+    </div>
+
+    <!-- ============ ANALYTICS ============ -->
+    <div class="view" id="view-analytics">
+      <h1 class="page-title">Analytics</h1>
+      <div class="page-sub">Where your time and accuracy actually go.</div>
+
+      <div class="grid grid-4" style="margin-bottom:16px;">
+        <div class="card stat-card"><div class="stat-label">Fastest Solve</div><div class="stat-value" id="an-fastest">—</div></div>
+        <div class="card stat-card"><div class="stat-label">Slowest Solve</div><div class="stat-value" id="an-slowest">—</div></div>
+        <div class="card stat-card"><div class="stat-label">Questions / Min</div><div class="stat-value" id="an-qpm">—</div></div>
+        <div class="card stat-card"><div class="stat-label">Speed Score</div><div class="stat-value" id="an-speedscore">—</div></div>
+      </div>
+
+      <div class="grid grid-2" style="margin-bottom:16px; align-items:start;">
+        <div class="card">
+          <div class="section-title">Accuracy by section</div>
+          <div id="an-section-acc"></div>
+        </div>
+        <div class="card">
+          <div class="section-title">Accuracy by topic</div>
+          <div id="an-topic-acc" style="max-height:280px; overflow-y:auto;"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div class="section-title">Learning curve — mock scores over time</div>
+        <svg id="an-learning-curve" width="100%" height="140" viewBox="0 0 600 140" preserveAspectRatio="none"></svg>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Speed vs accuracy (per attempt)</div>
+        <svg id="an-scatter" width="100%" height="220" viewBox="0 0 600 220"></svg>
+      </div>
+    </div>
+
+    <!-- ============ PLANNER ============ -->
+    <div class="view" id="view-planner">
+      <h1 class="page-title">Study Planner</h1>
+      <div class="page-sub">20 Jul → 2 Aug · target 1000+ questions across Numerical, Verbal, Reasoning, plus mocks and revision.</div>
+      <div class="card" style="margin-bottom:18px;">
+        <div class="section-title">Plan progress</div>
+        <div class="bar-row"><div class="bar-label">Tasks completed</div><div class="bar-track"><div class="bar-fill" id="plan-progress-bar" style="background:var(--accent); width:0%;"></div></div><div class="bar-pct" id="plan-progress-pct">0%</div></div>
+      </div>
+      <div id="plan-days"></div>
+    </div>
+
+    <!-- ============ FORMULA CARDS ============ -->
+    <div class="view" id="view-formulas">
+      <h1 class="page-title">Formula Cards</h1>
+      <div class="page-sub">Quick-reference cheat sheets, grouped by topic.</div>
+      <div id="formula-cards" class="grid grid-2"></div>
+    </div>
+
+    <!-- ============ EMAIL WRITING ============ -->
+    <div class="view" id="view-emailwriting">
+      <h1 class="page-title">Professional Email Writing</h1>
+      <div class="page-sub">Real AI evaluation — grammar, tone, structure, vocabulary.</div>
+      <div class="card" style="margin-bottom:16px;">
+        <div class="section-title">Scenario <button class="btn btn-sm" onclick="newEmailScenario()">New scenario</button></div>
+        <div id="email-scenario-text" style="font-size:13.5px; color:var(--muted); line-height:1.6;"></div>
+      </div>
+      <div class="card" style="margin-bottom:16px;">
+        <textarea class="note-area" id="email-answer" style="min-height:220px; font-family:'Inter'; font-size:14px;" placeholder="Write your professional email here (100+ words)..."></textarea>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+          <span class="mono" style="font-size:12px; color:var(--muted);" id="email-wordcount">0 words</span>
+          <button class="btn btn-primary" onclick="evaluateEmail()">Submit for AI evaluation</button>
+        </div>
+      </div>
+      <div class="ai-box" id="email-ai-result" style="display:none;">
+        <div class="lbl">⚡ AI Evaluation</div>
+        <div id="email-ai-content"></div>
+      </div>
+    </div>
+
+    <!-- ============ PASSAGE RECALL ============ -->
+    <div class="view" id="view-passagerecall">
+      <h1 class="page-title">Passage Recall</h1>
+      <div class="page-sub">Read for 30s, passage hides, rewrite from memory in 90s. AI scores meaning retention.</div>
+      <div class="card" style="margin-bottom:16px;">
+        <button class="btn btn-primary" onclick="startPassageRecall()">Start a passage</button>
+        <div id="passage-stage-area" style="margin-top:18px;"></div>
+      </div>
+      <div class="ai-box" id="passage-ai-result" style="display:none;">
+        <div class="lbl">⚡ AI Evaluation</div>
+        <div id="passage-ai-content"></div>
+      </div>
+    </div>
+
+    <!-- ============ BADGES ============ -->
+    <div class="view" id="view-badges">
+      <h1 class="page-title">Badges & Achievements</h1>
+      <div class="page-sub">XP, levels, and milestones.</div>
+      <div class="badge-grid" id="badge-grid"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Goal modal -->
+<div class="modal-bg" id="goal-modal">
+  <div class="modal">
+    <h2>Daily goal</h2>
+    <div class="sub">How many questions do you want to solve per day?</div>
+    <div class="chip-row" id="goal-options"></div>
+    <div class="modal-actions">
+      <button class="btn btn-block" onclick="closeGoalModal()">Done</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================================
+   TOPIC METADATA — frequency tags are a modeled estimate based on commonly
+   observed TCS NQT prep patterns, not a literal match against a PYQ database
+   we don't have licensed access to. Treat "PYQ Similarity" the same way:
+   a generated closeness heuristic, not a verified database lookup.
+========================================================================= */
+const TOPIC_META = {
+  "Percentages":       {section:"numerical", freq:"High",   recTime:60,  formula:"x% of y = (x/100)×y. % change = (New−Old)/Old × 100", shortcut:"Memorize 1/8=12.5%, 1/6≈16.67%, 1/3≈33.33% to convert fractions instantly."},
+  "Profit & Loss":      {section:"numerical", freq:"High",   recTime:60,  formula:"Profit% = (SP−CP)/CP × 100. Loss% = (CP−SP)/CP × 100", shortcut:"SP = CP × (100±gain/loss)/100 — skip the intermediate profit value."},
+  "SI & CI":             {section:"numerical", freq:"High",   recTime:75,  formula:"SI = P×R×T/100. CI = P×(1+R/100)^T − P", shortcut:"For 2-year CI: CI = SI + P×(R/100)²"},
+  "Ratio & Proportion":  {section:"numerical", freq:"High",   recTime:60,  formula:"a:b = a/b. If a:b=m:n, a=km, b=kn for some k", shortcut:"Scale ratios to a common term before comparing three quantities."},
+  "Average":             {section:"numerical", freq:"Medium", recTime:50,  formula:"Average = Sum of terms / Number of terms", shortcut:"New avg after replacing one term = old avg + (new−old term)/n"},
+  "Time & Work":         {section:"numerical", freq:"High",   recTime:70,  formula:"Work rate = 1/days. Combined rate = sum of individual rates", shortcut:"Use LCM of days as total work units to avoid fractions."},
+  "Time, Speed & Distance": {section:"numerical", freq:"High", recTime:65, formula:"Speed=Distance/Time. km/hr → m/s: ×5/18", shortcut:"Relative speed: add for opposite directions, subtract for same direction."},
+  "Number System":       {section:"numerical", freq:"Medium", recTime:70, formula:"HCF×LCM = product of two numbers. Remainder theorem for large powers", shortcut:"For remainders of powers, find the cyclicity of the base modulo the divisor."},
+  "Permutation, Combination & Probability": {section:"numerical", freq:"Medium", recTime:80, formula:"nPr = n!/(n−r)!. nCr = n!/(r!(n−r)!). P(E)=favorable/total", shortcut:"Combination when order doesn't matter, permutation when it does."},
+  "Mensuration":         {section:"numerical", freq:"Low",    recTime:55, formula:"Area(rect)=l×b. Circumference=2πr. Volume(cube)=a³", shortcut:"Keep π=22/7 for radius multiples of 7, else 3.14."},
+  "Number Series":       {section:"reasoning", freq:"High",   recTime:45, formula:"Check difference pattern, ratio pattern, or alternate-term pattern first", shortcut:"Compute first 3 differences before guessing the rule."},
+  "Letter Series":       {section:"reasoning", freq:"Medium", recTime:45, formula:"Map letters to positions A=1...Z=26, look for arithmetic gaps", shortcut:"Write the alphabet with position numbers above each letter to spot gaps fast."},
+  "Coding-Decoding":     {section:"reasoning", freq:"High",   recTime:50, formula:"Identify the shift/rule applied per letter (shift, reverse, pairing)", shortcut:"Test the rule on one letter first, then apply uniformly."},
+  "Direction Sense":     {section:"reasoning", freq:"Medium", recTime:55, formula:"Track net displacement on an x-y grid: N/S on y-axis, E/W on x-axis", shortcut:"Opposite-direction moves cancel out — only the net matters."},
+  "Blood Relations":     {section:"reasoning", freq:"Medium", recTime:60, formula:"Build a family tree diagram from the statement before answering", shortcut:"Watch for gender-revealing words (son, daughter, mother) to fix the tree."},
+  "Syllogism":           {section:"reasoning", freq:"High",   recTime:55, formula:"Use Venn diagrams for All/Some/No statements", shortcut:"Two negative or two particular (some) premises never yield a valid conclusion."},
+  "Seating & Arrangement": {section:"reasoning", freq:"High", recTime:90, formula:"Fix one reference point, then place others relative to it", shortcut:"Draw the seats first, place fixed constraints, deduce the rest last."},
+  "Data Sufficiency":    {section:"reasoning", freq:"Medium", recTime:50, formula:"Check each statement alone first, then both together", shortcut:"Never assume outside info — only the statements given are valid."},
+  "Analogy":             {section:"reasoning", freq:"Low",    recTime:35, formula:"Identify the relationship type: function, category, part-whole, cause-effect", shortcut:"State the relationship in a sentence, then apply it to the second pair."},
+  "Odd One Out":         {section:"reasoning", freq:"Low",    recTime:40, formula:"Look for a shared mathematical or categorical property among 3 of the 4", shortcut:"Test the most 'unusual-looking' option first as the likely odd one."},
+  "Sentence Completion": {section:"verbal", freq:"High", recTime:35, formula:"Match subject-verb agreement, tense, and fixed prepositions", shortcut:"Read the full sentence first — the answer often hinges on a word after the blank."},
+  "Vocabulary":          {section:"verbal", freq:"Medium", recTime:30, formula:"Root/prefix/suffix recognition narrows meaning fast", shortcut:"Eliminate options with clearly opposite connotation first."}
+};
+
+/* =========================================================================
+   PROCEDURAL GENERATORS — genuinely unlimited, randomized each call.
+   Every generator returns the full question schema.
+========================================================================= */
+function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function gcdFn(a,b){ return b===0?a:gcdFn(b,a%b); }
+function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function makeOptions(correct, distractorFn, fmt){
+  const set = new Set([correct]);
+  let guard=0;
+  while(set.size<4 && guard<50){ set.add(distractorFn()); guard++; }
+  const arr = shuffle([...set]).slice(0,4);
+  if(!arr.includes(correct)) arr[ri(0,3)]=correct;
+  const idx = arr.indexOf(correct);
+  return { opts: arr.map(v=> fmt?fmt(v):String(v)), answer: idx };
+}
+function baseQ(topic, diff, q, opts, answer, steps, extra){
+  const meta = TOPIC_META[topic];
+  return Object.assign({
+    id: topic+"_"+Date.now()+"_"+Math.floor(Math.random()*100000),
+    section: meta.section, topic, subtopic: topic, difficulty: diff,
+    estTime: meta.recTime, q, opts, answer, steps, formula: meta.formula, shortcut: meta.shortcut,
+    freq: meta.freq, pyqScore: ri(55,92), companies: pick([["TCS Digital"],["TCS Ninja","TCS Digital"],["TCS Digital","Infosys"],["TCS Ninja"]])
+  }, extra||{});
+}
+
+function genPercentage(){
+  const mode = pick(['pctOf','isWhatPct','pctChange']);
+  if(mode==='pctOf'){
+    const base = ri(2,40)*10; const pct = pick([5,10,12,15,20,25,30,40,50,60,75]);
+    const ans = Math.round(base*pct/100);
+    const {opts,answer} = makeOptions(ans, ()=>ans + pick([-10,-6,4,8,-4,6])*ri(1,3));
+    return baseQ("Percentages","Easy",`What is ${pct}% of ${base}?`, opts, answer,
+      [`${pct}% of ${base} = (${pct}/100) × ${base}`, `= ${ans}`]);
+  }
+  if(mode==='isWhatPct'){
+    const whole = ri(2,20)*25; const part = whole * pick([0.1,0.2,0.25,0.4,0.5,0.6,0.75]);
+    const ans = Math.round(part/whole*100);
+    const {opts,answer} = makeOptions(ans, ()=>ans+pick([-15,-10,10,15,5,-5]), v=>v+"%");
+    return baseQ("Percentages","Easy",`${Math.round(part)} is what percent of ${whole}?`, opts, answer,
+      [`Percentage = (${Math.round(part)}/${whole}) × 100`, `= ${ans}%`]);
+  }
+  const old = ri(10,40)*25; const pct = pick([10,12,15,20,25,30]); const up = pick([true,false]);
+  const now = up ? Math.round(old*(1+pct/100)) : Math.round(old*(1-pct/100));
+  const ans = pct;
+  const {opts,answer} = makeOptions(ans, ()=>ans+pick([-8,-5,5,8,3,-3]), v=>v+"%");
+  return baseQ("Percentages","Medium",`A quantity changed from ${old} to ${now}. What is the percentage ${up?'increase':'decrease'}?`, opts, answer,
+    [`${up?'Increase':'Decrease'} = ${Math.abs(now-old)}`, `% = (${Math.abs(now-old)}/${old}) × 100 = ${ans}%`]);
+}
+
+function genProfitLoss(){
+  const mode = pick(['findPctFromCPSP','findCPFromSPPct','findSPFromCPPct']);
+  if(mode==='findPctFromCPSP'){
+    const cp = ri(4,40)*25; const gain = pick([true,true,false]);
+    const pct = pick([5,10,12,15,20,25]);
+    const sp = gain ? Math.round(cp*(1+pct/100)) : Math.round(cp*(1-pct/100));
+    const ans = pct;
+    const {opts,answer} = makeOptions(ans, ()=>ans+pick([-6,-4,4,6,3,-3]), v=>v+"%");
+    return baseQ("Profit & Loss","Easy",`A shopkeeper buys an item for ₹${cp} and sells it for ₹${sp}. Find the ${gain?'profit':'loss'} percentage.`, opts, answer,
+      [`${gain?'Profit':'Loss'} = ₹${Math.abs(sp-cp)}`, `% = (${Math.abs(sp-cp)}/${cp}) × 100 = ${ans}%`]);
+  }
+  if(mode==='findCPFromSPPct'){
+    const pct = pick([5,10,15,20,25]); const loss = pick([true,false]);
+    const cp = ri(4,30)*50;
+    const sp = loss ? Math.round(cp*(1-pct/100)) : Math.round(cp*(1+pct/100));
+    const ans = cp;
+    const {opts,answer} = makeOptions(ans, ()=>ans+pick([-100,-50,50,100,25,-25]), v=>"₹"+v);
+    return baseQ("Profit & Loss","Medium",`A man sells an article at a ${pct}% ${loss?'loss':'gain'} for ₹${sp}. Find the cost price.`, opts, answer,
+      [`CP = SP / (1 ${loss?'−':'+'} ${pct}/100)`, `= ${sp} / ${loss?(1-pct/100).toFixed(2):(1+pct/100).toFixed(2)} = ₹${ans}`]);
+  }
+  const mp = ri(8,40)*50; const disc = pick([5,10,15,20,25]);
+  const ans = Math.round(mp*(1-disc/100));
+  const {opts,answer} = makeOptions(ans, ()=>ans+pick([-40,-20,20,40,10,-10]), v=>"₹"+v);
+  return baseQ("Profit & Loss","Easy",`Marked price of an item is ₹${mp} with a ${disc}% discount. Find the selling price.`, opts, answer,
+    [`SP = MP × (1 − ${disc}/100)`, `= ${mp} × ${(1-disc/100).toFixed(2)} = ₹${ans}`]);
+}
+
+function genSICI(){
+  const isCI = pick([true,false]);
+  const p = ri(10,60)*100; const r = pick([5,6,8,10,12]); const t = pick([2,3]);
+  if(!isCI){
+    const ans = Math.round(p*r*t/100);
+    const {opts,answer} = makeOptions(ans, ()=>ans+pick([-150,-80,80,150,50,-50]), v=>"₹"+v);
+    return baseQ("SI & CI","Easy",`Find the simple interest on ₹${p} at ${r}% p.a. for ${t} years.`, opts, answer,
+      [`SI = P×R×T/100 = ${p}×${r}×${t}/100`, `= ₹${ans}`]);
+  }
+  const amt = p*Math.pow(1+r/100,t);
+  const ans = Math.round(amt-p);
+  const {opts,answer} = makeOptions(ans, ()=>ans+pick([-120,-60,60,120,40,-40]), v=>"₹"+v);
+  return baseQ("SI & CI","Medium",`Find the compound interest on ₹${p} at ${r}% p.a. for ${t} years.`, opts, answer,
+    [`Amount = P×(1+R/100)^T = ${p}×(${(1+r/100).toFixed(2)})^${t}`, `≈ ₹${Math.round(amt)}. CI = Amount − P = ₹${ans}`]);
+}
+
+function genRatio(){
+  const mode = pick(['divide','combine']);
+  if(mode==='divide'){
+    const a=pick([2,3,4,5]); const b=pick([3,4,5,7]);
+    if(a===b) return genRatio();
+    const total = (a+b)*ri(3,20)*5;
+    const ansA = Math.round(total*a/(a+b));
+    const {opts,answer} = makeOptions(ansA, ()=>ansA+pick([-80,-40,40,80,20,-20]), v=>"₹"+v);
+    return baseQ("Ratio & Proportion","Easy",`Divide ₹${total} between A and B in the ratio ${a}:${b}. Find A's share.`, opts, answer,
+      [`A's share = Total × ${a}/(${a}+${b})`, `= ${total} × ${a}/${a+b} = ₹${ansA}`]);
+  }
+  const a=pick([2,3,5]); const b=pick([3,4,5]);
+  if(a===b) return genRatio();
+  const sum = (a+b)*ri(3,15);
+  const larger = Math.round(sum*b/(a+b));
+  const {opts,answer} = makeOptions(larger, ()=>larger+pick([-15,-10,10,15,5,-5]));
+  return baseQ("Ratio & Proportion","Easy",`Two numbers are in the ratio ${a}:${b} and their sum is ${sum}. Find the larger number.`, opts, answer,
+    [`Let numbers = ${a}x, ${b}x. Sum: ${a+b}x=${sum} → x=${sum/(a+b)}`, `Larger = ${b}x = ${larger}`]);
+}
+
+function genAverage(){
+  const mode = pick(['basic','replace']);
+  if(mode==='basic'){
+    const n = pick([5,7,9,11]); const start = ri(1,20);
+    const nums = Array.from({length:n},(_,i)=>start+i*ri(1,3));
+    const sum = nums.reduce((a,b)=>a+b,0); const ans = +(sum/n).toFixed(1);
+    const {opts,answer} = makeOptions(ans, ()=>+(ans+pick([-4,-2,2,4,1,-1])).toFixed(1));
+    return baseQ("Average","Easy",`Find the average of: ${nums.join(", ")}`, opts, answer,
+      [`Sum = ${sum}`, `Average = ${sum}/${n} = ${ans}`]);
+  }
+  const n = pick([4,5,6]); const oldAvg = ri(10,30);
+  const excluded = ri(5,40);
+  const oldSum = oldAvg*n;
+  const newSum = oldSum - excluded;
+  const newAvg = +(newSum/(n-1)).toFixed(1);
+  const {opts,answer} = makeOptions(excluded, ()=>excluded+pick([-6,-3,3,6,2,-2]));
+  return baseQ("Average","Medium",`The average of ${n} numbers is ${oldAvg}. If one number is excluded, the average becomes ${newAvg}. Find the excluded number.`, opts, answer,
+    [`Sum of ${n} numbers = ${oldSum}`, `Sum of ${n-1} numbers = ${newAvg}×${n-1} = ${newSum}`, `Excluded number = ${oldSum} − ${newSum} = ${excluded}`]);
+}
+
+function genTimeWork(){
+  const mode = pick(['together','menDays','efficiency']);
+  if(mode==='together'){
+    const a = pick([8,9,10,12,15,18,20]); const b = pick([12,15,18,20,24,30]);
+    if(a===b) return genTimeWork();
+    const days = +((a*b)/(a+b)).toFixed(2);
+    const {opts,answer} = makeOptions(days, ()=>+(days+pick([-1.5,-0.8,0.8,1.5,0.5,-0.5])).toFixed(2), v=>v+" days");
+    return baseQ("Time & Work","Medium",`A can do a work in ${a} days, B in ${b} days. Working together, how many days will they take?`, opts, answer,
+      [`Combined rate = 1/${a} + 1/${b}`, `Days = (${a}×${b})/(${a}+${b}) = ${days} days`]);
+  }
+  if(mode==='menDays'){
+    const men1 = pick([4,5,6,8,10]); const days1 = pick([6,8,9,10,12]);
+    const men2 = pick([2,3,4,5,6,10,12,15,20]);
+    if(men2===men1) return genTimeWork();
+    const totalWork = men1*days1;
+    if(totalWork % men2 !== 0) return genTimeWork();
+    const days2 = totalWork/men2;
+    const {opts,answer} = makeOptions(days2, ()=>days2+pick([-3,-2,2,3,1,-1]), v=>v+" days");
+    return baseQ("Time & Work","Easy",`${men1} men can complete a work in ${days1} days. In how many days will ${men2} men complete it?`, opts, answer,
+      [`Total work = ${men1}×${days1} = ${totalWork} man-days`, `Days for ${men2} men = ${totalWork}/${men2} = ${days2} days`]);
+  }
+  const a = pick([10,12,15,18,20]); const factor=2;
+  const bDays = a/factor;
+  const {opts,answer} = makeOptions(bDays, ()=>bDays+pick([-3,-2,2,3,1,-1]), v=>v+" days");
+  return baseQ("Time & Work","Medium",`A does a work in ${a} days. B is twice as efficient as A. In how many days will B alone complete it?`, opts, answer,
+    [`B's time = A's time / 2`, `= ${a}/2 = ${bDays} days`]);
+}
+
+function genTSD(){
+  const mode = pick(['crossPole','basicSpeed','meetOpposite']);
+  if(mode==='crossPole'){
+    const len = pick([100,120,140,150,160,180,200]); const t = pick([10,12,14,15,16,18,20]);
+    const mps = len/t; const kmph = Math.round(mps*3.6);
+    const {opts,answer} = makeOptions(kmph, ()=>kmph+pick([-6,-3,3,6,4,-4]), v=>v+" km/hr");
+    return baseQ("Time, Speed & Distance","Easy",`A train ${len} m long crosses a pole in ${t} seconds. Find its speed in km/hr.`, opts, answer,
+      [`Speed = ${len}/${t} = ${mps.toFixed(2)} m/s`, `In km/hr = ${mps.toFixed(2)} × 3.6 = ${kmph} km/hr`]);
+  }
+  if(mode==='basicSpeed'){
+    const speed = pick([40,50,60,70,80,90]); const time = pick([2,3,4,5]);
+    const dist = speed*time;
+    const {opts,answer} = makeOptions(speed, ()=>speed+pick([-15,-10,10,15,5,-5]), v=>v+" km/hr");
+    return baseQ("Time, Speed & Distance","Easy",`A car covers ${dist} km in ${time} hours. Find its speed.`, opts, answer,
+      [`Speed = Distance/Time = ${dist}/${time}`, `= ${speed} km/hr`]);
+  }
+  const s1=pick([30,40,50]); const s2=pick([40,50,60,70]);
+  const dist = (s1+s2)*pick([2,3,4]);
+  const t = dist/(s1+s2);
+  const {opts,answer} = makeOptions(t, ()=>t+pick([-1.5,-0.5,0.5,1.5,1,-1]), v=>v+" hrs");
+  return baseQ("Time, Speed & Distance","Medium",`Two trains start from the same point in opposite directions at ${s1} km/hr and ${s2} km/hr. After how many hours will they be ${dist} km apart?`, opts, answer,
+    [`Combined speed = ${s1}+${s2} = ${s1+s2} km/hr`, `Time = ${dist}/${s1+s2} = ${t} hrs`]);
+}
+
+function genNumberSystem(){
+  const mode = pick(['hcf','sumN','remainder']);
+  if(mode==='hcf'){
+    const f = pick([6,8,9,12]); const m1=pick([3,4,5,6]); const m2=pick([5,7,8,9]);
+    if(m1===m2) return genNumberSystem();
+    const n1=f*m1, n2=f*m2; const ans=f;
+    const {opts,answer} = makeOptions(ans, ()=>ans+pick([-4,-2,2,4,3,-3]));
+    return baseQ("Number System","Easy",`Find the HCF of ${n1} and ${n2}.`, opts, answer,
+      [`${n1} = ${f} × ${m1}`, `${n2} = ${f} × ${m2}`, `HCF = ${f}`]);
+  }
+  if(mode==='sumN'){
+    const n = pick([15,20,25,30,40,50]); const ans = n*(n+1)/2;
+    const {opts,answer} = makeOptions(ans, ()=>ans+pick([-20,-10,10,20,5,-5]));
+    return baseQ("Number System","Easy",`Find the sum of the first ${n} natural numbers.`, opts, answer,
+      [`Sum = n(n+1)/2 = ${n}×${n+1}/2`, `= ${ans}`]);
+  }
+  const base = pick([2,3]); const div = 7; const exp = pick([40,45,50,55,60]);
+  const cyc = base===2?3:6;
+  const rem = exp % cyc === 0 ? cyc : exp % cyc;
+  const cycVals = [];
+  let v=1; for(let i=1;i<=cyc;i++){ v=(v*base)%div; cycVals.push(v); }
+  const ans = cycVals[rem-1];
+  const {opts,answer} = makeOptions(ans, ()=>(ans+pick([1,2,3,4,5]))%div || 1);
+  return baseQ("Number System","Hard",`Find the remainder when ${base}^${exp} is divided by ${div}.`, opts, answer,
+    [`${base}^${cyc} ≡ 1 (mod ${div}) — cyclicity is ${cyc}`, `${exp} mod ${cyc} = ${rem}`, `So ${base}^${exp} ≡ ${base}^${rem} ≡ ${ans} (mod ${div})`]);
+}
+
+function genPnC(){
+  const mode = pick(['arrange','probability']);
+  if(mode==='arrange'){
+    const n = pick([3,4,5]);
+    const fact = n=>n<=1?1:n*fact(n-1);
+    const ans = fact(n);
+    const {opts,answer} = makeOptions(ans, ()=>ans+pick([-6,-4,4,6,10,-10]));
+    return baseQ("Permutation, Combination & Probability","Easy",`In how many ways can all ${n} letters of a ${n}-letter word (all distinct) be arranged?`, opts, answer,
+      [`Arrangements = ${n}!`, `= ${ans}`]);
+  }
+  const red = pick([3,4,5,6]); const blue = pick([4,5,6,7,8]);
+  const total = red+blue; const g = gcdFn(red,total);
+  const ans = `${red/g}/${total/g}`;
+  const {opts,answer} = makeOptions(ans, ()=>{ const nn=ri(1,total-1); const gg=gcdFn(nn,total); return `${nn/gg}/${total/gg}`; });
+  return baseQ("Permutation, Combination & Probability","Easy",`A bag has ${red} red and ${blue} blue balls. One ball is drawn at random. Find the probability it's red.`, opts, answer,
+    [`P(red) = ${red}/${total}`, `= ${ans} (simplified)`]);
+}
+
+function genMensuration(){
+  const mode = pick(['rect','circle','cube']);
+  if(mode==='rect'){
+    const l=ri(6,25); const b=ri(4,18); const ans=l*b;
+    const {opts,answer} = makeOptions(ans, ()=>ans+pick([-30,-15,15,30,10,-10]), v=>v+" cm²");
+    return baseQ("Mensuration","Easy",`Find the area of a rectangle with length ${l} cm and breadth ${b} cm.`, opts, answer,
+      [`Area = l × b = ${l} × ${b}`, `= ${ans} cm²`]);
+  }
+  if(mode==='circle'){
+    const r=pick([7,14,21,28]); const ans=Math.round(2*(22/7)*r);
+    const {opts,answer} = makeOptions(ans, ()=>ans+pick([-8,-4,4,8,6,-6]), v=>v+" cm");
+    return baseQ("Mensuration","Easy",`Find the circumference of a circle with radius ${r} cm (use π = 22/7).`, opts, answer,
+      [`C = 2πr = 2 × 22/7 × ${r}`, `= ${ans} cm`]);
+  }
+  const s=ri(3,12); const ans=s*s*s;
+  const {opts,answer} = makeOptions(ans, ()=>ans+pick([-40,-20,20,40,15,-15]), v=>v+" cm³");
+  return baseQ("Mensuration","Easy",`Find the volume of a cube with side ${s} cm.`, opts, answer,
+    [`Volume = a³ = ${s}³`, `= ${ans} cm³`]);
+}
+
+function genNumberSeries(){
+  const mode = pick(['arithDiff','geometric','square']);
+  if(mode==='arithDiff'){
+    const start=ri(1,10); const d0=ri(2,6); const inc=pick([1,2]);
+    const seq=[start]; let d=d0;
+    for(let i=0;i<4;i++){ seq.push(seq[seq.length-1]+d); d+=inc; }
+    const ans = seq[seq.length-1]+d;
+    const {opts,answer} = makeOptions(ans, ()=>ans+pick([-6,-3,3,6,2,-2]));
+    return baseQ("Number Series","Easy",`Find the next number: ${seq.join(", ")}, ?`, opts, answer,
+      [`Differences: ${Array.from({length:4},(_,i)=>seq[i+1]-seq[i]).join(", ")}`, `Next difference = ${d}`, `Next term = ${seq[seq.length-1]} + ${d} = ${ans}`]);
+  }
+  if(mode==='geometric'){
+    const start=pick([2,3]); const r=pick([2,3]);
+    const seq=[start]; for(let i=0;i<4;i++) seq.push(seq[seq.length-1]*r);
+    const ans = seq[seq.length-1]*r;
+    const {opts,answer} = makeOptions(ans, ()=>ans+pick([Math.round(ans*0.2),-Math.round(ans*0.2),Math.round(ans*0.5),-Math.round(ans*0.3)]));
+    return baseQ("Number Series","Easy",`Find the missing number: ${seq.join(", ")}, ?`, opts, answer,
+      [`Each term × ${r}`, `${seq[seq.length-1]} × ${r} = ${ans}`]);
+  }
+  const start=ri(1,6);
+  const seq = Array.from({length:5},(_,i)=>(start+i)*(start+i));
+  const ans = (start+5)*(start+5);
+  const {opts,answer} = makeOptions(ans, ()=>ans+pick([-6,-4,4,6,10,-10]));
+  return baseQ("Number Series","Easy",`Find the next number: ${seq.join(", ")}, ?`, opts, answer,
+    [`These are perfect squares of consecutive integers starting at ${start}`, `Next = ${start+5}² = ${ans}`]);
+}
+
+function uniquePad(correct, candidates){
+  const set=[correct];
+  for(const c of candidates){ if(set.length>=4) break; if(!set.includes(c)) set.push(c); }
+  let guard=0;
+  while(set.length<4 && guard<100){
+    guard++;
+    const chars = correct.split('');
+    const idx = ri(0, chars.length-1);
+    const cCode = chars[idx].charCodeAt(0);
+    if(cCode>=65 && cCode<=90){
+      chars[idx] = String.fromCharCode(65+((cCode-65+ri(1,5))%26));
+      const cand = chars.join('');
+      if(!set.includes(cand)) set.push(cand);
+    } else {
+      set.push(correct+"_"+guard);
+    }
+  }
+  const arr = shuffle(set);
+  return { opts: arr, answer: arr.indexOf(correct) };
+}
+
+function genLetterSeries(){
+  const mode = pick(['increasingGap','oddOneOutPair','stepBack']);
+  const A=65;
+  if(mode==='increasingGap'){
+    const start=ri(0,4); let pos=start; const seq=[String.fromCharCode(A+pos)]; let gap=ri(2,4);
+    for(let i=0;i<4;i++){ pos+=gap; if(pos>25){ return genLetterSeries(); } seq.push(String.fromCharCode(A+pos)); gap+=1; }
+    const nextPos = pos+gap;
+    if(nextPos>25) return genLetterSeries();
+    const ansChar = String.fromCharCode(A+nextPos);
+    const candidates = [-3,-2,-1,1,2,3,4].map(d=>nextPos+d).filter(p=>p>=0 && p<=25).map(p=>String.fromCharCode(A+p));
+    const {opts,answer} = uniquePad(ansChar, shuffle(candidates));
+    return baseQ("Letter Series","Medium",`Find the next letter: ${seq.join(", ")}, ?`, opts, answer,
+      [`Gaps increase by 1 each step: starts at ${gap-4}`, `Next gap = ${gap}, so ${seq[seq.length-1]} + ${gap} → ${ansChar}`]);
+  }
+  if(mode==='stepBack'){
+    const start=ri(20,25); const step=pick([2,3]);
+    const seq=[]; let pos=start;
+    for(let i=0;i<4;i++){ seq.push(String.fromCharCode(A+pos)); pos-=step; if(pos<0) return genLetterSeries(); }
+    const ansChar = String.fromCharCode(A+pos);
+    const candidates = [-3,-2,-1,1,2,3,4].map(d=>pos+d).filter(p=>p>=0 && p<=25).map(p=>String.fromCharCode(A+p));
+    const {opts,answer} = uniquePad(ansChar, shuffle(candidates));
+    return baseQ("Letter Series","Easy",`Which letter comes next: ${seq.join(", ")}, ?`, opts, answer,
+      [`Each letter steps back by ${step}`, `${seq[seq.length-1]} − ${step} → ${ansChar}`]);
+  }
+  const gap = pick([2,3]);
+  const usedStarts = new Set();
+  const pairs = [];
+  let guard=0;
+  while(pairs.length<3 && guard<40){
+    guard++;
+    const s=ri(0,22);
+    if(s+gap>25 || usedStarts.has(s)) continue;
+    usedStarts.add(s);
+    pairs.push(String.fromCharCode(A+s)+String.fromCharCode(A+s+gap));
+  }
+  if(pairs.length<3) return genLetterSeries();
+  const oddGap = gap===2?3:2;
+  let s2, oddPair, oGuard=0;
+  do{ s2=ri(0,22); oddPair = String.fromCharCode(A+s2)+String.fromCharCode(A+s2+oddGap); oGuard++; }
+  while((s2+oddGap>25 || pairs.includes(oddPair)) && oGuard<40);
+  if(s2+oddGap>25 || pairs.includes(oddPair)) return genLetterSeries();
+  const all = shuffle([...pairs, oddPair]);
+  return baseQ("Letter Series","Medium",`Find the odd one out: ${all.join(", ")}`, all, all.indexOf(oddPair),
+    [`The other three pairs each have a +${gap} letter gap`, `'${oddPair}' has a +${oddGap} gap — the odd one out`]);
+}
+
+function genCoding(){
+  const shift = ri(1,7);
+  const words = ["CAT","DOG","SUN","MOON","STAR","BOOK","PLAN","TEAM","WORK","CODE","EXAM","RANK"];
+  const word = pick(words);
+  const shiftWord = (w,sh) => w.split('').map(c=>String.fromCharCode(((c.charCodeAt(0)-65+sh+26)%26)+65)).join('');
+  const coded = shiftWord(word, shift);
+  const testWord = pick(words.filter(w=>w!==word));
+  const ans = shiftWord(testWord, shift);
+  const wrongShifts = shuffle([1,2,3,4,5,6,7,8].filter(s=>s!==shift)).slice(0,5);
+  const candidates = wrongShifts.map(s=>shiftWord(testWord, s));
+  const {opts,answer} = uniquePad(ans, candidates);
+  return baseQ("Coding-Decoding","Medium",`If ${word} is coded as ${coded}, how is ${testWord} coded?`, opts, answer,
+    [`Each letter is shifted by +${shift}: e.g. ${word[0]}→${coded[0]}`, `Applying the same shift to ${testWord} gives ${ans}`]);
+}
+
+function genDirection(){
+  const mode = pick(['cancel','netDiag']);
+  if(mode==='cancel'){
+    const d1=pick([['north','south'],['east','west']]);
+    const dist1=ri(3,10); const dist2=ri(1,dist1-1); const dist3=dist1;
+    const netDist = dist1-dist2>0? (dist2) : dist2;
+    const finalDist = Math.abs(dist2);
+    const {opts,answer} = makeOptions(finalDist+" km", ()=>((finalDist+pick([-2,2,1,-1,3]))>0?(finalDist+pick([-2,2,1,-1,3])):finalDist+2)+" km");
+    return baseQ("Direction Sense","Easy",`A man walks ${dist1} km ${d1[0]}, then ${dist2} km ${d1[1]==='south'||d1[1]==='west'?pick(['east','west']):pick(['north','south'])}, then ${dist3} km ${d1[1]}. How far is he from the starting point?`, opts, answer,
+      [`The ${dist1} km ${d1[0]} and ${dist3} km ${d1[1]} segments cancel to leave a net of ${finalDist} km`, `He ends up ${finalDist} km from start`]);
+  }
+  const d = ri(5,15);
+  const {opts,answer} = makeOptions("North-East", ()=>pick(["North-West","South-East","South-West"]));
+  return baseQ("Direction Sense","Easy",`A person walks ${d} m east, then ${d} m north. In which direction is he from the starting point?`, opts, answer,
+    [`Equal east and north displacement`, `The resultant direction is North-East`]);
+}
+
+const NUM_GENERATORS = {
+  "Percentages": genPercentage, "Profit & Loss": genProfitLoss, "SI & CI": genSICI,
+  "Ratio & Proportion": genRatio, "Average": genAverage, "Time & Work": genTimeWork,
+  "Time, Speed & Distance": genTSD, "Number System": genNumberSystem,
+  "Permutation, Combination & Probability": genPnC, "Mensuration": genMensuration
+};
+const REASONING_GENERATORS = {
+  "Number Series": genNumberSeries, "Letter Series": genLetterSeries,
+  "Coding-Decoding": genCoding, "Direction Sense": genDirection
+};
+</script>
+<script>
+/* =========================================================================
+   CURATED BANK — topics that don't template well algorithmically without a
+   much larger effort (multi-day). Hand-written, original, not copied from
+   any prep site. Smaller pool than the generators — expandable on request.
+========================================================================= */
+function curatedQ(topic, diff, q, opts, answer, exp){
+  const meta = TOPIC_META[topic];
+  return { id: topic+"_c_"+Math.random().toString(36).slice(2), section: meta.section, topic, subtopic: topic,
+    difficulty: diff, estTime: meta.recTime, q, opts, answer, steps:[exp], formula: meta.formula, shortcut: meta.shortcut,
+    freq: meta.freq, pyqScore: ri(55,90), companies:["TCS Digital","TCS Ninja"] };
+}
+const CURATED = [
+  curatedQ("Blood Relations","Medium","Pointing to a photo, Ram said, 'She is the daughter of my grandfather's only son.' How is she related to Ram?", ["Sister","Cousin","Aunt","Daughter"], 0, "Grandfather's only son = Ram's father. His daughter = Ram's sister."),
+  curatedQ("Blood Relations","Hard","A is B's brother. B is C's sister. C is D's father. How is A related to D?", ["Father","Uncle","Brother","Grandfather"], 1, "A is sibling of C (D's father), so A is D's uncle."),
+  curatedQ("Blood Relations","Medium","Pointing to a man, a woman said, 'His mother is the only daughter of my mother.' How is the woman related to the man?", ["Mother","Sister","Aunt","Daughter"], 0, "'Only daughter of my mother' is the woman herself, so she is the man's mother."),
+  curatedQ("Blood Relations","Medium","P is Q's father. Q is R's sister. S is R's mother. How is P related to S?", ["Husband","Brother","Son","Father"], 0, "P and S are both parents of Q/R, making P the husband of S."),
+  curatedQ("Blood Relations","Hard","Introducing a boy, a girl said, 'He is the son of my father's only daughter.' How is the boy related to the girl?", ["Son","Brother","Nephew","Cousin"], 0, "'My father's only daughter' is the girl herself, so the boy is her son."),
+  curatedQ("Syllogism","Easy","All cats are animals. All animals are living beings. Conclusion: All cats are living beings.", ["True","False","Cannot be determined"], 0, "A valid chain: cats ⊂ animals ⊂ living beings."),
+  curatedQ("Syllogism","Medium","Some pens are books. All books are papers. Conclusion: Some pens are papers.", ["True","False","Cannot be determined"], 0, "The pens that are books must also be papers, so some pens are papers."),
+  curatedQ("Syllogism","Hard","No apples are oranges. Some oranges are fruits. Conclusion: No apples are fruits.", ["True","False","Cannot be determined"], 2, "The premises don't rule out apples being fruits through another link — cannot be determined."),
+  curatedQ("Syllogism","Medium","All doctors are graduates. Some graduates are teachers. Conclusion: Some doctors are teachers.", ["True","False","Cannot be determined"], 2, "The overlap between graduates and teachers may not include doctors — cannot be determined."),
+  curatedQ("Syllogism","Hard","All squares are rectangles. No rectangle is a triangle. Conclusion: No square is a triangle.", ["True","False","Cannot be determined"], 0, "Since squares ⊂ rectangles and rectangles ∩ triangles = ∅, squares ∩ triangles = ∅."),
+  curatedQ("Seating & Arrangement","Medium","Five students sit in a row facing north. P is immediately left of Q, and R is immediately right of Q. If P is 2nd from the left end, what is Q's position from the left?", ["2nd","3rd","4th","5th"], 1, "P is at position 2, so Q (immediate right of P) is at position 3."),
+  curatedQ("Seating & Arrangement","Medium","Four boxes M, N, O, P are stacked. M is above N. O is below N. P is above M. Which box is at the top?", ["M","N","O","P"], 3, "Order bottom to top: O, N, M, P — P is on top."),
+  curatedQ("Seating & Arrangement","Hard","Six people sit in a circle facing the center. A is opposite D. B is immediately right of A. Who is immediately left of D?", ["B","C","E","F"], 0, "In a circle, the person immediately right of A sits immediately left of the person opposite A — that's B."),
+  curatedQ("Seating & Arrangement","Hard","Five friends sit in a row. A is at one end. B is next to A. C is next to B but not at the other end. Where can C NOT be seated?", ["2nd from left","3rd from left","At either end","2nd from right"], 2, "Since A occupies one end and C is two seats from A, C cannot be at either extreme end."),
+  curatedQ("Data Sufficiency","Medium","What is Ram's age? I: Ram is 5 years older than Shyam. II: Shyam is 20 years old.", ["Statement I alone","Statement II alone","Both together","Either statement alone"], 2, "Neither alone gives Ram's age; together, Ram = 20+5 = 25."),
+  curatedQ("Data Sufficiency","Medium","Is x an even number? I: x is divisible by 4. II: x is divisible by 2.", ["Statement I alone","Statement II alone","Both together","Either statement alone"], 3, "Either condition alone guarantees x is even."),
+  curatedQ("Data Sufficiency","Hard","What is the value of y? I: y² = 16. II: y > 0.", ["Statement I alone","Statement II alone","Both together","Neither together"], 2, "I alone gives y=±4; II alone only gives sign. Together: y = 4."),
+  curatedQ("Data Sufficiency","Medium","Is triangle ABC equilateral? I: All three sides are equal. II: All three angles are 60°.", ["Statement I alone","Statement II alone","Both together","Either statement alone"], 3, "Either condition alone is sufficient to prove equilateral."),
+  curatedQ("Analogy","Easy","Doctor : Hospital :: Teacher : ?", ["School","Book","Student","Class"], 0, "A doctor works at a hospital; a teacher works at a school."),
+  curatedQ("Analogy","Easy","Pen : Write :: Knife : ?", ["Cut","Sharp","Kitchen","Blade"], 0, "A pen is used to write; a knife is used to cut."),
+  curatedQ("Analogy","Easy","Bird : Nest :: Man : ?", ["House","Cave","Tree","Office"], 0, "A bird lives in a nest; a man lives in a house."),
+  curatedQ("Analogy","Medium","Author : Book :: Sculptor : ?", ["Statue","Chisel","Museum","Marble"], 0, "An author creates a book; a sculptor creates a statue."),
+  curatedQ("Odd One Out","Easy","Find the odd one out: Triangle, Square, Circle, Pentagon", ["Triangle","Square","Circle","Pentagon"], 2, "All others are polygons with straight sides and vertices; a circle has none."),
+  curatedQ("Odd One Out","Easy","Find the odd one out: Apple, Banana, Carrot, Mango", ["Apple","Banana","Carrot","Mango"], 2, "Carrot is a vegetable; the rest are fruits."),
+  curatedQ("Odd One Out","Medium","Find the odd one out: 8, 27, 64, 100", ["8","27","64","100"], 3, "8, 27, 64 are perfect cubes (2³, 3³, 4³); 100 is not."),
+  curatedQ("Odd One Out","Medium","Find the odd one out: Guitar, Violin, Flute, Piano", ["Guitar","Violin","Flute","Piano"], 2, "Guitar, Violin, and Piano are string/keyed instruments; Flute is a wind instrument."),
+  curatedQ("Sentence Completion","Easy","She has been working here ___ 2019.", ["since","for","from","during"], 0, "'Since' is used with a specific point in time."),
+  curatedQ("Sentence Completion","Medium","Neither the manager nor the employees ___ satisfied with the new policy.", ["is","are","was","be"], 1, "With 'neither...nor', the verb agrees with the nearer subject — 'employees' (plural) → 'are'."),
+  curatedQ("Sentence Completion","Easy","The report needs to be submitted ___ Friday.", ["by","until","since","for"], 0, "'By' indicates a deadline."),
+  curatedQ("Sentence Completion","Easy","He is one of the ___ engineers in the company.", ["best","better","good","well"], 0, "Superlative 'best' fits 'one of the ___' construction."),
+  curatedQ("Sentence Completion","Medium","I would rather ___ at home than go to the party.", ["stay","staying","stayed","to stay"], 0, "'Would rather' is followed by the base form of the verb."),
+  curatedQ("Sentence Completion","Easy","The committee ___ its decision yesterday.", ["announced","announces","announcing","has announce"], 0, "Past tense fits 'yesterday'."),
+  curatedQ("Sentence Completion","Easy","She is allergic ___ peanuts.", ["to","with","from","of"], 0, "'Allergic to' is the correct fixed preposition."),
+  curatedQ("Sentence Completion","Hard","Hardly had the meeting started ___ the fire alarm rang.", ["when","than","then","that"], 0, "'Hardly...when' is the correct pairing."),
+  curatedQ("Sentence Completion","Medium","The new policy will come ___ effect from next month.", ["into","in","on","at"], 0, "'Come into effect' is the fixed phrase."),
+  curatedQ("Sentence Completion","Easy","He apologized ___ being late.", ["for","to","with","about"], 0, "'Apologize for' is the correct usage."),
+  curatedQ("Sentence Completion","Medium","Everyone ___ present at the seminar yesterday.", ["was","were","are","be"], 0, "'Everyone' is singular and takes 'was'."),
+  curatedQ("Sentence Completion","Medium","The number of employees ___ increasing every year.", ["is","are","was","were"], 0, "'The number of' takes a singular verb."),
+  curatedQ("Sentence Completion","Easy","I look forward ___ hearing from you soon.", ["to","for","on","at"], 0, "'Look forward to' is followed by a gerund."),
+  curatedQ("Sentence Completion","Medium","The manager insisted ___ completing the project on time.", ["on","for","to","at"], 0, "'Insist on' is the correct fixed preposition."),
+  curatedQ("Sentence Completion","Medium","This is the same book ___ I lost last week.", ["that","what","which","whom"], 0, "'Same...that' is the standard construction."),
+  curatedQ("Sentence Completion","Easy","The train arrived ___ time despite the delay.", ["on","in","at","by"], 0, "'On time' is the fixed phrase."),
+  curatedQ("Sentence Completion","Easy","She congratulated him ___ his promotion.", ["on","for","of","to"], 0, "'Congratulate on' is correct usage."),
+  curatedQ("Sentence Completion","Hard","Not only the manager but also the employees ___ invited to the event.", ["were","was","is","be"], 0, "With 'not only...but also', the verb agrees with the nearer subject — 'employees' → 'were'."),
+  curatedQ("Sentence Completion","Easy","He is good ___ mathematics.", ["at","in","on","for"], 0, "'Good at' is the correct fixed preposition."),
+  curatedQ("Sentence Completion","Easy","They have been friends ___ they were in school.", ["since","for","from","during"], 0, "'Since' introduces a starting point/clause in time."),
+  curatedQ("Sentence Completion","Medium","The project was delayed ___ unforeseen circumstances.", ["due to","because","due","cause of"], 0, "'Due to' is a preposition phrase correctly followed by a noun phrase."),
+  curatedQ("Sentence Completion","Medium","She is capable ___ handling the entire project alone.", ["of","to","for","with"], 0, "'Capable of' is the correct fixed preposition."),
+  curatedQ("Vocabulary","Easy","Choose the synonym of 'Abundant'.", ["Plentiful","Scarce","Limited","Rare"], 0, "'Abundant' means existing in large quantities — 'plentiful'."),
+  curatedQ("Vocabulary","Easy","Choose the antonym of 'Optimistic'.", ["Hopeful","Pessimistic","Confident","Cheerful"], 1, "The opposite of 'optimistic' is 'pessimistic'."),
+  curatedQ("Vocabulary","Medium","Choose the synonym of 'Meticulous'.", ["Careless","Careful","Hasty","Vague"], 1, "'Meticulous' means showing great attention to detail — 'careful'."),
+  curatedQ("Vocabulary","Easy","Choose the antonym of 'Genuine'.", ["Authentic","Fake","Sincere","Real"], 1, "The opposite of 'genuine' is 'fake'."),
+  curatedQ("Vocabulary","Medium","Choose the synonym of 'Candid'.", ["Frank","Secretive","Dishonest","Reserved"], 0, "'Candid' means open and honest — 'frank'."),
+  curatedQ("Vocabulary","Easy","Choose the antonym of 'Diligent'.", ["Hardworking","Lazy","Careful","Sincere"], 1, "The opposite of 'diligent' (hardworking) is 'lazy'."),
+  curatedQ("Vocabulary","Medium","Choose the synonym of 'Ambiguous'.", ["Clear","Unclear","Certain","Precise"], 1, "'Ambiguous' means open to more than one interpretation — 'unclear'."),
+  curatedQ("Vocabulary","Easy","Choose the synonym of 'Concise'.", ["Brief","Lengthy","Detailed","Vague"], 0, "'Concise' means giving information clearly in few words — 'brief'."),
+  curatedQ("Vocabulary","Medium","Choose the antonym of 'Reluctant'.", ["Hesitant","Willing","Unwilling","Doubtful"], 1, "The opposite of 'reluctant' is 'willing'."),
+  curatedQ("Vocabulary","Easy","Choose the synonym of 'Meticulously'.", ["Carelessly","Carefully","Quickly","Roughly"], 1, "'Meticulously' means in a careful, precise way.")
+];
+
+const EMAIL_SCENARIOS = [
+  "Write a professional email to your manager requesting two days of leave next week for a family function.",
+  "Write a professional email to your team informing them that tomorrow's meeting has been rescheduled to 4 PM.",
+  "Write a professional email to a client apologizing for a delay in project delivery and proposing a new timeline.",
+  "Write a professional email to HR asking for clarification on the reimbursement process for work travel.",
+  "Write a professional email to your manager summarizing the progress made on a project this week.",
+  "Write a professional email to a vendor requesting a quotation for office supplies.",
+  "Write a professional email declining a meeting invite due to a scheduling conflict, and suggesting an alternative time.",
+  "Write a professional email to your team lead flagging a technical blocker that is delaying your task.",
+  "Write a professional email thanking an interviewer after a job interview and reiterating your interest in the role.",
+  "Write a professional email to a colleague requesting help reviewing a document before a client presentation."
+];
+
+const PASSAGES = [
+  "The rise of remote work has fundamentally changed how companies think about office space. Many organizations have shifted to hybrid models, offering employees flexibility while maintaining a physical headquarters for collaboration. This shift has reduced real estate costs for some businesses but introduced new challenges in maintaining company culture and ensuring effective communication across distributed teams. Studies suggest that hybrid arrangements, when managed well, can improve employee satisfaction without sacrificing productivity.",
+  "Renewable energy adoption has accelerated globally over the past decade, driven by falling costs of solar and wind technology. Governments have introduced subsidies and policy incentives to encourage this transition, while private investment in clean energy infrastructure has grown substantially. Despite this progress, challenges remain around energy storage and grid reliability, which must be addressed to fully replace fossil fuel dependence in the coming decades.",
+  "Artificial intelligence is increasingly being integrated into everyday business operations, from customer service chatbots to predictive analytics in supply chain management. While these tools offer efficiency gains, they also raise concerns about job displacement and the need for workforce reskilling. Companies that invest early in employee training alongside AI adoption tend to see smoother transitions and better long-term outcomes.",
+  "Urban public transportation systems are undergoing significant modernization, with many cities investing in electric buses and smart ticketing systems. These upgrades aim to reduce carbon emissions and improve commuter experience. However, funding constraints often slow implementation, particularly in cities with aging infrastructure that requires simultaneous maintenance and expansion.",
+  "Corporate wellness programs have expanded beyond gym memberships to include mental health support, flexible scheduling, and financial wellness resources. Organizations that implement comprehensive wellness initiatives often report lower employee turnover and higher engagement scores. Critics argue that such programs can be superficial if not paired with genuine cultural change around workload and expectations."
+];
+</script>
+<script>
+/* =========================================================================
+   STATE & STORAGE
+========================================================================= */
+const SECTION_INFO = {
+  numerical: {label:"Numerical Ability", count:20, minutes:25},
+  verbal:    {label:"Verbal Ability", count:25, minutes:26},
+  reasoning: {label:"Reasoning Ability", count:20, minutes:25}
+};
+const ALL_TOPICS_BY_SECTION = {
+  numerical: Object.keys(NUM_GENERATORS),
+  reasoning: [...Object.keys(REASONING_GENERATORS), "Blood Relations","Syllogism","Seating & Arrangement","Data Sufficiency","Analogy","Odd One Out"],
+  verbal: ["Sentence Completion","Vocabulary"]
+};
+
+let ST = {
+  attempts: [],            // [{date,timestamp,mode,section,score,total,timeTakenSec,topicMap,perQ:[{topic,correct,timeSec}]}]
+  practiceStats: {},       // {topic:{attempted,correct,timeSum,best,studyTimeSec}}
+  bookmarks: {},           // {qKey: questionSnapshot}
+  notes: {},               // {qKey: text}
+  wrongQueue: [],          // [{qKey, snapshot, due, interval, addedAt}]
+  mistakeLog: [],          // [{qKey, snapshot, wrongAt}]
+  xp: 0,
+  activeDates: [],         // ["2026-07-20", ...]
+  totalStudySeconds: 0,
+  dailyGoal: 30,
+  planChecks: {},          // {"d0_0":true}
+  earnedBadges: [],
+  lastAIRecommendation: null
+};
+
+function qKey(q){
+  const s = q.topic+"|"+q.q;
+  let h=0; for(let i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))|0; }
+  return "k"+h;
+}
+async function loadJSON(key, fallback){
+  try{ const r = await window.storage.get(key); return r ? JSON.parse(r.value) : fallback; }catch(e){ return fallback; }
+}
+async function saveJSON(key, val){ try{ await window.storage.set(key, JSON.stringify(val)); }catch(e){ console.error(e); } }
+
+async function loadAll(){
+  const saved = await loadJSON('nqt_state_v1', null);
+  if(saved) ST = Object.assign(ST, saved);
+}
+let saveTimer=null;
+function persist(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>saveJSON('nqt_state_v1', ST), 400);
+}
+
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function markActiveToday(){
+  const t = todayStr();
+  if(!ST.activeDates.includes(t)){ ST.activeDates.push(t); persist(); }
+}
+function computeStreak(){
+  const dates = new Set(ST.activeDates);
+  let streak=0; let d=new Date();
+  while(true){ const s=d.toISOString().slice(0,10); if(dates.has(s)){ streak++; d.setDate(d.getDate()-1); } else break; }
+  return streak;
+}
+
+/* XP / Levels */
+const LEVELS = [0,100,250,450,700,1000,1400,1900,2500,3200,4000,5000];
+function levelForXP(xp){ let lvl=1; for(let i=0;i<LEVELS.length;i++){ if(xp>=LEVELS[i]) lvl=i+1; } return lvl; }
+function xpForNextLevel(xp){ const lvl=levelForXP(xp); return LEVELS[lvl] ?? (LEVELS[LEVELS.length-1]+1000); }
+function addXP(n){ ST.xp += n; persist(); renderSidebarXP(); }
+function renderSidebarXP(){
+  const lvl = levelForXP(ST.xp);
+  const nextThresh = xpForNextLevel(ST.xp);
+  const prevThresh = LEVELS[lvl-1] ?? 0;
+  const frac = Math.min(1,(ST.xp-prevThresh)/Math.max(1,(nextThresh-prevThresh)));
+  document.getElementById('sb-level').textContent = 'Level '+lvl;
+  document.getElementById('sb-xp').textContent = ST.xp+' XP';
+  document.getElementById('sb-xp-fill').style.width = (frac*100)+'%';
+}
+
+/* Badges */
+const BADGE_DEFS = [
+  {id:'first10', ic:'🎯', n:'First 10', check: s=>totalSolvedCount()>=10},
+  {id:'q100', ic:'💯', n:'100 Questions', check: s=>totalSolvedCount()>=100},
+  {id:'q500', ic:'🔥', n:'500 Questions', check: s=>totalSolvedCount()>=500},
+  {id:'q1000', ic:'🏆', n:'1000 Questions', check: s=>totalSolvedCount()>=1000},
+  {id:'streak3', ic:'📅', n:'3-Day Streak', check: s=>computeStreak()>=3},
+  {id:'streak7', ic:'⚡', n:'7-Day Streak', check: s=>computeStreak()>=7},
+  {id:'firstmock', ic:'📝', n:'First Mock', check: s=>ST.attempts.length>=1},
+  {id:'mock5', ic:'🎓', n:'5 Mocks', check: s=>ST.attempts.length>=5},
+  {id:'perfect', ic:'✨', n:'Perfect Score', check: s=>ST.attempts.some(a=>a.score===a.total)},
+  {id:'earlybird', ic:'🌅', n:'Early Bird', check: s=>new Date().getHours()<9 && totalSolvedCount()>0},
+];
+function totalSolvedCount(){
+  const mockQ = ST.attempts.reduce((s,a)=>s+a.total,0);
+  const pracQ = Object.values(ST.practiceStats).reduce((s,t)=>s+t.attempted,0);
+  return mockQ+pracQ;
+}
+function checkBadges(){
+  BADGE_DEFS.forEach(b=>{
+    if(!ST.earnedBadges.includes(b.id) && b.check(ST)){ ST.earnedBadges.push(b.id); addXP(50); }
+  });
+  persist();
+}
+
+/* =========================================================================
+   NAV
+========================================================================= */
+function nav(view){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+view).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const navMap = {run:'practice', result:'mock', topic:'practice'};
+  const navItem = document.querySelector('.nav-item[data-nav="'+(navMap[view]||view)+'"]');
+  if(navItem) navItem.classList.add('active');
+  const renderers = {
+    dashboard: renderDashboard, practice: renderPracticeHub, mock: renderMockSetup,
+    revision: renderRevision, analytics: renderAnalytics, planner: renderPlanner,
+    formulas: renderFormulaCards, badges: renderBadges, emailwriting: renderEmailWriting,
+    passagerecall: renderPassageRecall
+  };
+  if(renderers[view]) renderers[view]();
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('.nav-item').forEach(el=> el.addEventListener('click', ()=>nav(el.dataset.nav)));
+document.querySelectorAll('.tab[data-ptab]').forEach(el=>{
+  el.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab[data-ptab]').forEach(t=>t.classList.remove('active'));
+    el.classList.add('active');
+    ['topic','modes','custom'].forEach(t=> document.getElementById('ptab-'+t).style.display = (t===el.dataset.ptab?'block':'none'));
+    if(el.dataset.ptab==='custom') renderCustomPractice();
+  });
+});
+document.querySelectorAll('.tab[data-mtab]').forEach(el=>{
+  el.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab[data-mtab]').forEach(t=>t.classList.remove('active'));
+    el.classList.add('active');
+    ['section','full'].forEach(t=> document.getElementById('mtab-'+t).style.display = (t===el.dataset.mtab?'block':'none'));
+  });
+});
+</script>
+<script>
+/* =========================================================================
+   AI CALL WRAPPER — real Claude API calls for evaluation & recommendations
+========================================================================= */
+async function callClaude(prompt, maxTokens){
+  try{
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ model:"claude-sonnet-4-6", max_tokens: maxTokens||1000, messages:[{role:"user", content:prompt}] })
+    });
+    const data = await res.json();
+    const text = (data.content||[]).map(b=>b.text||"").join("\n").trim();
+    return text || "AI response unavailable right now.";
+  }catch(e){
+    return "AI evaluation temporarily unavailable — try again in a moment.";
+  }
+}
+
+/* =========================================================================
+   DASHBOARD
+========================================================================= */
+function renderDashboard(){
+  const totalMockQ = ST.attempts.reduce((s,a)=>s+a.total,0);
+  const totalMockCorrect = ST.attempts.reduce((s,a)=>s+a.score,0);
+  const pracAttempted = Object.values(ST.practiceStats).reduce((s,t)=>s+t.attempted,0);
+  const pracCorrect = Object.values(ST.practiceStats).reduce((s,t)=>s+t.correct,0);
+  const totalQ = totalMockQ+pracAttempted, totalC = totalMockCorrect+pracCorrect;
+  const todayAttempts = ST.attempts.filter(a=>a.date===todayStr()).reduce((s,a)=>s+a.total,0);
+
+  document.getElementById('d-solved').textContent = totalQ;
+  document.getElementById('d-today').textContent = todayAttempts+' today';
+  document.getElementById('d-accuracy').textContent = totalQ? Math.round(totalC/totalQ*100)+'%':'—';
+  const streak = computeStreak();
+  document.getElementById('d-streak').innerHTML = streak+'<span style="font-size:13px;color:var(--muted);">d</span>';
+  document.getElementById('d-streak-note').textContent = streak>0 ? 'Keep it going' : 'Start today';
+  document.getElementById('d-time').textContent = Math.round(ST.totalStudySeconds/3600*10)/10+'h';
+  document.getElementById('d-mocks').textContent = ST.attempts.length;
+
+  const readiness = document.getElementById('readiness-cards');
+  readiness.innerHTML='';
+  [['numerical','Digital'],['reasoning','Ninja']].forEach(()=>{});
+  const overallAcc = totalQ? totalC/totalQ : 0;
+  const coverage = Math.min(1, totalQ/1000);
+  const digitalProb = Math.round(Math.min(95, overallAcc*70 + coverage*30));
+  const ninjaProb = Math.round(Math.min(97, overallAcc*75 + coverage*25 + 5));
+  const foundationScore = Math.round(overallAcc*100);
+  [["TCS Digital",digitalProb,'var(--accent2)'],["TCS Ninja",ninjaProb,'var(--good)'],["Foundation Score",foundationScore,'var(--warm)']].forEach(([label,val,color])=>{
+    const d = document.createElement('div');
+    d.className='card card-tight';
+    d.innerHTML = `<div class="stat-label">${label}</div><div class="stat-value" style="color:${color}; font-size:22px;">${val}${label!=="Foundation Score"?"%":"/100"}</div>`;
+    readiness.appendChild(d);
+  });
+
+  document.getElementById('today-goal-body').innerHTML = `
+    <div class="stat-value" style="font-size:22px;">${todayAttempts} <span style="font-size:13px;color:var(--muted);">/ ${ST.dailyGoal}</span></div>
+    <div class="bar-track" style="margin-top:8px;"><div class="bar-fill" style="width:${Math.min(100,todayAttempts/ST.dailyGoal*100)}%; background:var(--accent);"></div></div>`;
+
+  const bars = document.getElementById('readiness-bars');
+  bars.innerHTML='';
+  Object.keys(SECTION_INFO).forEach(sec=>{
+    const last = [...ST.attempts].reverse().find(a=>a.section===sec && a.mode!=='full-part');
+    const pct = last? Math.round(last.score/last.total*100):0;
+    const color = pct>=70?'var(--good)':pct>=40?'var(--warm)':'var(--danger)';
+    const row=document.createElement('div'); row.className='bar-row';
+    row.innerHTML = `<div class="bar-label">${SECTION_INFO[sec].label}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%; background:${color};"></div></div><div class="bar-pct">${last?pct+'%':'—'}</div>`;
+    bars.appendChild(row);
+  });
+
+  const weakBox = document.getElementById('weak-topics');
+  const entries = Object.entries(ST.practiceStats).filter(([t,s])=>s.attempted>=5)
+    .map(([t,s])=>({topic:t, acc:s.correct/s.attempted})).sort((a,b)=>a.acc-b.acc).slice(0,5);
+  weakBox.innerHTML = entries.length===0 ? 'Practice a few topics to see weak areas here.' :
+    entries.map(e=>{ const pct=Math.round(e.acc*100); const pill=pct<50?'pill-bad':pct<75?'pill-warm':'pill-good';
+      return `<div style="display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px solid var(--border); font-size:13px;"><span>${e.topic}</span><span class="pill ${pill}">${pct}%</span></div>`; }).join('');
+
+  renderHeatmap();
+  renderSidebarXP();
+  document.getElementById('rev-count-inline').textContent = dueRevisionCount();
+}
+
+function renderHeatmap(){
+  const wrap = document.getElementById('heatmap');
+  wrap.innerHTML='';
+  const dates = new Set(ST.activeDates);
+  const today = new Date();
+  const cells=[];
+  for(let i=69;i>=0;i--){ const d=new Date(today); d.setDate(d.getDate()-i); cells.push(d.toISOString().slice(0,10)); }
+  cells.forEach(ds=>{
+    const c=document.createElement('div'); c.className='heat-cell'; c.title=ds;
+    if(dates.has(ds)) c.style.background='var(--accent)';
+    wrap.appendChild(c);
+  });
+  document.getElementById('heatmap-total').textContent = ST.activeDates.length+' active days';
+}
+
+async function fetchAIRecommendation(){
+  const box = document.getElementById('ai-recommendation');
+  box.innerHTML = '<span class="ai-loading">Thinking...</span>';
+  const weak = Object.entries(ST.practiceStats).filter(([t,s])=>s.attempted>=3).map(([t,s])=>`${t}: ${Math.round(s.correct/s.attempted*100)}%`).join(', ') || 'no data yet';
+  const totalQ = totalSolvedCount();
+  const streak = computeStreak();
+  const prompt = `You are a blunt, no-fluff TCS NQT placement prep coach. Student stats: total questions solved=${totalQ}, streak=${streak} days, topic accuracies=[${weak}], daily goal=${ST.dailyGoal}. In 3-4 short sentences (no headers, no bullet lists), tell them exactly what to focus on next and why. Be direct and specific, not generic encouragement.`;
+  const result = await callClaude(prompt, 300);
+  box.textContent = result;
+  ST.lastAIRecommendation = result; persist();
+}
+
+/* Goal modal */
+function openGoalModal(){
+  const wrap = document.getElementById('goal-options'); wrap.innerHTML='';
+  [15,20,30,50,75,100].forEach(n=>{
+    const c=document.createElement('div'); c.className='chip'+(ST.dailyGoal===n?' selected':''); c.textContent=n+' Qs/day';
+    c.onclick=()=>{ ST.dailyGoal=n; persist(); openGoalModal(); renderDashboard(); };
+    wrap.appendChild(c);
+  });
+  document.getElementById('goal-modal').classList.add('show');
+}
+function closeGoalModal(){ document.getElementById('goal-modal').classList.remove('show'); }
+</script>
+<script>
+/* =========================================================================
+   QUESTION POOL BUILDERS
+========================================================================= */
+function genOne(topic){
+  if(NUM_GENERATORS[topic]) return NUM_GENERATORS[topic]();
+  if(REASONING_GENERATORS[topic]) return REASONING_GENERATORS[topic]();
+  return null;
+}
+function isGenerated(topic){ return !!(NUM_GENERATORS[topic] || REASONING_GENERATORS[topic]); }
+function curatedForTopic(topic){ return CURATED.filter(q=>q.topic===topic); }
+
+function buildTopicPool(topic, count){
+  if(isGenerated(topic)){
+    const arr=[]; for(let i=0;i<count;i++) arr.push(genOne(topic));
+    return arr;
+  }
+  const pool = shuffle(curatedForTopic(topic));
+  const arr=[]; for(let i=0;i<count;i++) arr.push(pool[i%pool.length]);
+  return arr;
+}
+function allTopicsFlat(){ return [...Object.keys(NUM_GENERATORS), ...Object.keys(REASONING_GENERATORS), "Blood Relations","Syllogism","Seating & Arrangement","Data Sufficiency","Analogy","Odd One Out","Sentence Completion","Vocabulary"]; }
+
+function buildSectionPool(section, count){
+  const topics = ALL_TOPICS_BY_SECTION[section];
+  const arr=[];
+  for(let i=0;i<count;i++){ const t=pick(topics); arr.push(isGenerated(t)? genOne(t) : pick(curatedForTopic(t))); }
+  return arr;
+}
+function buildMixedPool(count){
+  const topics = allTopicsFlat();
+  const arr=[]; for(let i=0;i<count;i++){ const t=pick(topics); arr.push(isGenerated(t)? genOne(t) : pick(curatedForTopic(t))); }
+  return arr;
+}
+function buildExpectedPool(count){
+  const topics = allTopicsFlat().filter(t=>TOPIC_META[t].freq==="High");
+  const arr=[]; for(let i=0;i<count;i++){ const t=pick(topics); arr.push(isGenerated(t)? genOne(t) : pick(curatedForTopic(t))); }
+  return arr;
+}
+function buildWeakPool(count){
+  const weak = Object.entries(ST.practiceStats).filter(([t,s])=>s.attempted>=3).map(([t,s])=>({t,acc:s.correct/s.attempted})).sort((a,b)=>a.acc-b.acc).slice(0,5).map(x=>x.t);
+  const topics = weak.length? weak : allTopicsFlat();
+  const arr=[]; for(let i=0;i<count;i++){ const t=pick(topics); arr.push(isGenerated(t)? genOne(t) : pick(curatedForTopic(t))); }
+  return arr;
+}
+function buildWrongPool(){
+  return ST.wrongQueue.map(w=>w.snapshot);
+}
+function buildBookmarkPool(){
+  return Object.values(ST.bookmarks);
+}
+
+/* =========================================================================
+   PRACTICE HUB
+========================================================================= */
+function renderPracticeHub(){
+  const wrap = document.getElementById('practice-sections');
+  wrap.innerHTML='';
+  Object.keys(SECTION_INFO).forEach(sec=>{
+    const secDiv = document.createElement('div'); secDiv.className='card'; secDiv.style.marginBottom='16px';
+    secDiv.innerHTML = `<div class="section-title">${SECTION_INFO[sec].label}</div>`;
+    const list = document.createElement('div'); list.className='topic-list';
+    ALL_TOPICS_BY_SECTION[sec].forEach(topic=>{
+      const stat = ST.practiceStats[topic] || {attempted:0, correct:0};
+      const pct = stat.attempted? Math.round(stat.correct/stat.attempted*100):null;
+      const gen = isGenerated(topic);
+      const row=document.createElement('div'); row.className='topic-row';
+      row.innerHTML = `<div>
+          <div class="topic-name">${topic} <span class="pill ${gen?'pill-good':'pill-muted'}" style="margin-left:6px;">${gen?'Unlimited':curatedForTopic(topic).length+' curated'}</span> <span class="pill pill-accent2">${TOPIC_META[topic].freq} freq</span></div>
+          <div class="topic-meta">${stat.attempted} attempted</div>
+        </div>
+        <div class="topic-acc" style="color:${pct===null?'var(--muted)':pct>=70?'var(--good)':pct>=40?'var(--warm)':'var(--danger)'}">${pct===null?'New':pct+'%'}</div>`;
+      row.addEventListener('click', ()=> nav_topicDetail(topic));
+      list.appendChild(row);
+    });
+    secDiv.appendChild(list);
+    wrap.appendChild(secDiv);
+  });
+  document.getElementById('wrong-count-note').textContent = ST.wrongQueue.length+' questions in your wrong-answer queue.';
+  document.getElementById('bookmark-count-note').textContent = Object.keys(ST.bookmarks).length+' questions bookmarked.';
+}
+
+let currentTopicDetail = null;
+function nav_topicDetail(topic){
+  currentTopicDetail = topic;
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-topic').classList.add('active');
+  document.getElementById('topic-crumb-name').textContent = topic;
+  document.getElementById('topic-detail-title').textContent = topic;
+  const meta = TOPIC_META[topic];
+  document.getElementById('topic-detail-sub').textContent = `${meta.section[0].toUpperCase()+meta.section.slice(1)} · ${meta.freq} frequency · ${isGenerated(topic)?'Unlimited generated questions':curatedForTopic(topic).length+' curated questions'}`;
+
+  const stat = ST.practiceStats[topic] || {attempted:0, correct:0, timeSum:0, best:null};
+  const total = isGenerated(topic) ? '∞' : curatedForTopic(topic).length;
+  document.getElementById('t-solved').textContent = stat.attempted;
+  document.getElementById('t-remaining').textContent = isGenerated(topic)? 'Unlimited pool' : Math.max(0,curatedForTopic(topic).length-stat.attempted)+' remaining';
+  const acc = stat.attempted? Math.round(stat.correct/stat.attempted*100):null;
+  document.getElementById('t-accuracy').textContent = acc===null?'—':acc+'%';
+  document.getElementById('t-best-time').textContent = 'Best time '+(stat.best? stat.best+'s':'—');
+  const avgT = stat.attempted? Math.round(stat.timeSum/stat.attempted):null;
+  document.getElementById('t-avgtime').textContent = avgT===null?'—':avgT+'s';
+  document.getElementById('t-recommended').textContent = 'Recommended '+meta.recTime+'s';
+  document.getElementById('t-completion').textContent = isGenerated(topic) ? (stat.attempted>=50?'100%':Math.round(stat.attempted/50*100)+'%') : Math.min(100,Math.round(stat.attempted/curatedForTopic(topic).length*100))+'%';
+  document.getElementById('t-weightage').textContent = 'Expected weightage: '+meta.freq;
+
+  const diffDist = document.getElementById('t-diff-dist');
+  const dd = {Easy:0,Medium:0,Hard:0};
+  const sample = isGenerated(topic) ? buildTopicPool(topic,30) : curatedForTopic(topic);
+  sample.forEach(q=>{ dd[q.difficulty] = (dd[q.difficulty]||0)+1; });
+  const ddTotal = Object.values(dd).reduce((a,b)=>a+b,0)||1;
+  diffDist.innerHTML = Object.entries(dd).map(([d,c])=>{
+    const pct = Math.round(c/ddTotal*100);
+    const color = d==='Easy'?'var(--good)':d==='Medium'?'var(--warm)':'var(--danger)';
+    return `<div class="bar-row"><div class="bar-label">${d}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%; background:${color};"></div></div><div class="bar-pct">${pct}%</div></div>`;
+  }).join('');
+
+  const relatedTopics = ALL_TOPICS_BY_SECTION[meta.section].filter(t=>t!==topic);
+  const strongWeak = document.getElementById('t-strong-weak');
+  const rows = relatedTopics.map(t=>{
+    const s = ST.practiceStats[t];
+    if(!s || s.attempted<3) return null;
+    return {t, acc: s.correct/s.attempted};
+  }).filter(Boolean).sort((a,b)=>b.acc-a.acc);
+  if(rows.length===0){ strongWeak.textContent = 'Not enough data on related topics yet.'; }
+  else{
+    strongWeak.innerHTML = `<div style="margin-bottom:8px;"><b style="color:var(--good);">Strongest:</b> ${rows[0].t} (${Math.round(rows[0].acc*100)}%)</div>
+      <div><b style="color:var(--danger);">Weakest:</b> ${rows[rows.length-1].t} (${Math.round(rows[rows.length-1].acc*100)}%)</div>`;
+  }
+
+  const timerWrap = document.getElementById('topic-timer-picks');
+  timerWrap.innerHTML=''; window.__topicTimerMin = 20;
+  [10,20,30,45,60].forEach(m=>{
+    const c=document.createElement('div'); c.className='chip'+(m===20?' selected':''); c.textContent=m+' min';
+    c.onclick=()=>{ document.querySelectorAll('#topic-timer-picks .chip').forEach(x=>x.classList.remove('selected')); c.classList.add('selected'); window.__topicTimerMin=m; };
+    timerWrap.appendChild(c);
+  });
+  window.scrollTo(0,0);
+}
+function startTopicTimedPractice(){
+  const minutes = window.__topicTimerMin || 20;
+  const estCount = Math.max(5, Math.round(minutes*60/TOPIC_META[currentTopicDetail].recTime));
+  const pool = buildTopicPool(currentTopicDetail, estCount);
+  startSession({ mode:'topicTimed', label: currentTopicDetail+' — Timed', questions: pool, timeLimitSec: minutes*60, allowBack:true, showTools:true });
+}
+function startTopicUntimed(){
+  const pool = buildTopicPool(currentTopicDetail, 15);
+  startSession({ mode:'practice', label: currentTopicDetail+' — Practice', questions: pool, timeLimitSec:0, allowBack:true, showTools:true });
+}
+
+/* Custom practice */
+let customSel = { sections:['numerical'], diff:'Any', count:20, time:15 };
+function renderCustomPractice(){
+  const secWrap = document.getElementById('custom-sections'); secWrap.innerHTML='';
+  Object.keys(SECTION_INFO).forEach(s=>{
+    const c=document.createElement('div'); c.className='chip'+(customSel.sections.includes(s)?' selected':''); c.textContent=SECTION_INFO[s].label;
+    c.onclick=()=>{ const i=customSel.sections.indexOf(s); if(i>=0) customSel.sections.splice(i,1); else customSel.sections.push(s); renderCustomPractice(); };
+    secWrap.appendChild(c);
+  });
+  const diffWrap = document.getElementById('custom-diff'); diffWrap.innerHTML='';
+  ['Any','Easy','Medium','Hard'].forEach(d=>{
+    const c=document.createElement('div'); c.className='chip'+(customSel.diff===d?' selected':''); c.textContent=d;
+    c.onclick=()=>{ customSel.diff=d; renderCustomPractice(); };
+    diffWrap.appendChild(c);
+  });
+  const countWrap = document.getElementById('custom-count'); countWrap.innerHTML='';
+  [20,30,50,100].forEach(n=>{
+    const c=document.createElement('div'); c.className='chip'+(customSel.count===n?' selected':''); c.textContent=n+' Qs';
+    c.onclick=()=>{ customSel.count=n; renderCustomPractice(); };
+    countWrap.appendChild(c);
+  });
+  const timeWrap = document.getElementById('custom-time'); timeWrap.innerHTML='';
+  [15,20,30,60,0].forEach(m=>{
+    const c=document.createElement('div'); c.className='chip'+(customSel.time===m?' selected':''); c.textContent= m===0?'No limit':m+' min';
+    c.onclick=()=>{ customSel.time=m; renderCustomPractice(); };
+    timeWrap.appendChild(c);
+  });
+}
+function startCustomPractice(){
+  const secs = customSel.sections.length? customSel.sections : ['numerical'];
+  let topics = secs.flatMap(s=>ALL_TOPICS_BY_SECTION[s]);
+  const arr=[];
+  for(let i=0;i<customSel.count;i++){
+    let t=pick(topics); let q = isGenerated(t)? genOne(t) : pick(curatedForTopic(t));
+    if(customSel.diff!=='Any'){
+      let guard=0;
+      while(q.difficulty!==customSel.diff && guard<12){ t=pick(topics); q = isGenerated(t)? genOne(t) : pick(curatedForTopic(t)); guard++; }
+    }
+    arr.push(q);
+  }
+  startSession({ mode:'custom', label:'Custom Practice', questions:arr, timeLimitSec: customSel.time*60, allowBack:true, showTools:true });
+}
+
+function launchMode(mode){
+  let pool, label;
+  if(mode==='mixed'){ pool=buildMixedPool(25); label='Mixed Practice'; }
+  else if(mode==='weak'){ pool=buildWeakPool(20); label='Weak Topic Practice'; }
+  else if(mode==='wrong'){ pool=buildWrongPool(); label='Wrong Questions Practice'; if(pool.length===0){ alert('No wrong questions yet — nice.'); return; } }
+  else if(mode==='bookmarked'){ pool=buildBookmarkPool(); label='Bookmarked Practice'; if(pool.length===0){ alert('No bookmarks yet.'); return; } }
+  else if(mode==='expected'){ pool=buildExpectedPool(25); label='Expected Questions (High Frequency)'; }
+  else if(mode==='rapidfire'){ pool=buildMixedPool(20); startSession({mode:'rapidfire', label:'Rapid Fire', questions:pool, timeLimitSec:0, perQTimeLimit:15, allowBack:false, showTools:false}); return; }
+  else if(mode==='adaptive'){ pool=buildMixedPool(20); startSession({mode:'adaptive', label:'Adaptive Practice', questions:pool, timeLimitSec:0, allowBack:false, showTools:true, adaptive:true}); return; }
+  startSession({ mode:'practice', label, questions:pool, timeLimitSec:0, allowBack:true, showTools:true });
+}
+function startStopwatch(){
+  const pool = buildMixedPool(30);
+  startSession({ mode:'stopwatch', label:'Stopwatch Mode', questions:pool, timeLimitSec:0, allowBack:true, showTools:true, stopwatch:true });
+}
+</script>
+<script>
+/* =========================================================================
+   UNIVERSAL SESSION RUNNER — powers mock tests, practice, custom, topic, modes
+========================================================================= */
+let SESSION = null;
+
+function startSession(cfg){
+  SESSION = Object.assign({
+    idx:0, answers:new Array(cfg.questions.length).fill(null), flagged:new Array(cfg.questions.length).fill(false),
+    perQTime:new Array(cfg.questions.length).fill(0), startTs:Date.now(), qStartTs:Date.now(),
+    remaining: cfg.timeLimitSec||0, timeLimitSec: cfg.timeLimitSec||0, timerHandle:null, qTimerHandle:null,
+    perQTimeLimit: cfg.perQTimeLimit||0, perQRemaining: cfg.perQTimeLimit||0,
+    allowBack: cfg.allowBack!==false, showTools: cfg.showTools!==false, stopwatch: !!cfg.stopwatch,
+    adaptive: !!cfg.adaptive, runningCorrect:0, runningTotal:0,
+    onFinish: cfg.onFinish || null, sectionKey: cfg.sectionKey || null,
+  }, cfg);
+  markActiveToday();
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-run').classList.add('active');
+  document.getElementById('run-label').textContent = SESSION.label;
+  document.getElementById('run-prev-btn').style.display = SESSION.allowBack ? 'inline-flex' : 'none';
+  document.querySelector('#view-run .q-tools').style.display = SESSION.showTools ? 'flex' : 'none';
+  buildRunDots();
+  renderRunQuestion();
+  startRunTimers();
+}
+
+function buildRunDots(){
+  const wrap = document.getElementById('run-qdots'); wrap.innerHTML='';
+  SESSION.questions.forEach((q,i)=>{ const d=document.createElement('div'); d.className='qdot'; d.id='rdot-'+i; wrap.appendChild(d); });
+}
+function updateRunDots(){
+  SESSION.questions.forEach((q,i)=>{
+    const d=document.getElementById('rdot-'+i);
+    d.classList.toggle('answered', SESSION.answers[i]!==null);
+    d.classList.toggle('current', i===SESSION.idx);
+    d.classList.toggle('flagged', SESSION.flagged[i]);
+  });
+}
+
+function startRunTimers(){
+  clearInterval(SESSION.timerHandle); clearInterval(SESSION.qTimerHandle);
+  updateRunTimerUI();
+  if(SESSION.timeLimitSec>0){
+    SESSION.timerHandle = setInterval(()=>{
+      SESSION.remaining--; updateRunTimerUI();
+      if(SESSION.remaining<=0){ clearInterval(SESSION.timerHandle); finishSession(); }
+    },1000);
+  }
+  SESSION.qStartTs = Date.now();
+  if(SESSION.perQTimeLimit>0) SESSION.perQRemaining = SESSION.perQTimeLimit;
+  SESSION.qTimerHandle = setInterval(()=>{
+    const elapsed = Math.floor((Date.now()-SESSION.qStartTs)/1000);
+    const qtEl = document.getElementById('run-qtimer');
+    const rec = SESSION.questions[SESSION.idx].estTime;
+    const speedColor = elapsed<=rec*0.7 ? 'var(--good)' : elapsed<=rec*1.2 ? 'var(--warm)' : 'var(--danger)';
+    qtEl.innerHTML = `<span class="speed-dot" style="background:${speedColor};"></span>${fmtTime(elapsed)}${SESSION.perQTimeLimit>0?' / '+fmtTime(SESSION.perQTimeLimit):''}`;
+    if(SESSION.perQTimeLimit>0){
+      SESSION.perQRemaining = SESSION.perQTimeLimit - elapsed;
+      if(SESSION.perQRemaining<=0){ nextRunQuestion(true); }
+    }
+    ST.totalStudySeconds++;
+  },1000);
+}
+function fmtTime(s){ const m=Math.floor(Math.abs(s)/60), sec=Math.abs(s)%60; return (s<0?'-':'')+String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0'); }
+
+function updateRunTimerUI(){
+  const el = document.getElementById('run-timer');
+  if(SESSION.timeLimitSec===0){ el.textContent = SESSION.stopwatch ? fmtTime(Math.floor((Date.now()-SESSION.startTs)/1000)) : '∞'; document.getElementById('ring-progress').style.display='none'; return; }
+  document.getElementById('ring-progress').style.display='';
+  el.textContent = fmtTime(SESSION.remaining);
+  el.classList.toggle('low', SESSION.remaining<=60);
+  const frac = SESSION.remaining/SESSION.timeLimitSec;
+  const circumference=132;
+  document.getElementById('ring-progress').setAttribute('stroke-dashoffset', circumference*(1-frac));
+  document.getElementById('ring-progress').setAttribute('stroke', SESSION.remaining<=60?'var(--danger)':'var(--accent)');
+}
+
+function renderRunQuestion(){
+  const q = SESSION.questions[SESSION.idx];
+  document.getElementById('run-topic-pill').textContent = q.topic;
+  document.getElementById('run-diff-pill').textContent = q.difficulty;
+  document.getElementById('run-freq-pill').textContent = q.freq+' freq';
+  document.getElementById('run-pyq-pill').textContent = 'PYQ '+q.pyqScore+'%';
+  document.getElementById('run-q-text').textContent = q.q;
+  document.getElementById('run-counter').textContent = `Q${SESSION.idx+1} / ${SESSION.questions.length}`;
+
+  const optWrap = document.getElementById('run-options'); optWrap.innerHTML='';
+  q.opts.forEach((opt,i)=>{
+    const div=document.createElement('div'); div.className='opt'+(SESSION.answers[SESSION.idx]===i?' selected':'');
+    div.innerHTML = `<div class="opt-letter">${String.fromCharCode(65+i)}</div><div>${opt}</div>`;
+    div.addEventListener('click', ()=>{
+      const already = SESSION.answers[SESSION.idx]!==null;
+      SESSION.answers[SESSION.idx]=i;
+      renderRunQuestion();
+      updateRunDots();
+      if(SESSION.showTools && !already){ showAnswerFeedback(); }
+    });
+    optWrap.appendChild(div);
+  });
+  ['hint','formula','shortcut','notes','discussion','explain'].forEach(k=>document.getElementById('reveal-'+k).classList.remove('show'));
+  document.getElementById('note-input').value = ST.notes[qKey(q)] || '';
+  const bkm = !!ST.bookmarks[qKey(q)];
+  document.getElementById('run-bookmark-btn').textContent = (bkm?'★':'☆')+' Bookmark';
+  document.getElementById('run-bookmark-btn').classList.toggle('selected', bkm);
+  document.getElementById('run-next-btn').textContent = SESSION.idx===SESSION.questions.length-1 ? 'Finish' : 'Next →';
+  document.getElementById('run-prev-btn').disabled = SESSION.idx===0;
+  updateRunDots();
+  SESSION.qStartTs = Date.now();
+}
+
+function showAnswerFeedback(){
+  if(!SESSION.showTools) return;
+  const q = SESSION.questions[SESSION.idx];
+  const chosen = SESSION.answers[SESSION.idx];
+  const optNodes = document.querySelectorAll('#run-options .opt');
+  optNodes.forEach((n,i)=>{ if(i===q.answer) n.classList.add('correct'); else if(i===chosen && i!==q.answer) n.classList.add('incorrect'); });
+  const exp = document.getElementById('reveal-explain');
+  exp.innerHTML = q.steps.map(s=>`<div class="step">${s}</div>`).join('');
+  exp.classList.add('show');
+}
+
+function toggleReveal(kind){
+  const map = { hint:()=>`Think about: ${SESSION.questions[SESSION.idx].formula}`, formula:()=>SESSION.questions[SESSION.idx].formula,
+    shortcut:()=>SESSION.questions[SESSION.idx].shortcut,
+    discussion:()=>{ const t=SESSION.questions[SESSION.idx].topic; return 'Related topic: '+t+'. Company tags: '+(SESSION.questions[SESSION.idx].companies||[]).join(', '); } };
+  const box = document.getElementById('reveal-'+kind);
+  const willShow = !box.classList.contains('show');
+  ['hint','formula','shortcut','notes','discussion'].forEach(k=>{ if(k!==kind) document.getElementById('reveal-'+k).classList.remove('show'); });
+  if(kind!=='notes' && map[kind]) box.textContent = map[kind]();
+  box.classList.toggle('show', willShow);
+}
+function saveNote(){
+  const q = SESSION.questions[SESSION.idx];
+  ST.notes[qKey(q)] = document.getElementById('note-input').value;
+  persist();
+}
+function toggleBookmark(){
+  const q = SESSION.questions[SESSION.idx]; const k = qKey(q);
+  if(ST.bookmarks[k]) delete ST.bookmarks[k]; else ST.bookmarks[k]=q;
+  persist();
+  const bkm = !!ST.bookmarks[k];
+  document.getElementById('run-bookmark-btn').textContent = (bkm?'★':'☆')+' Bookmark';
+  document.getElementById('run-bookmark-btn').classList.toggle('selected', bkm);
+}
+function reportQuestion(){ alert('Thanks — flagged for review.'); }
+
+function recordQTime(){
+  const elapsed = Math.max(1, Math.round((Date.now()-SESSION.qStartTs)/1000));
+  SESSION.perQTime[SESSION.idx] = elapsed;
+}
+function prevQuestion(){
+  if(!SESSION.allowBack || SESSION.idx===0) return;
+  recordQTime(); SESSION.idx--; renderRunQuestion();
+}
+function nextRunQuestion(auto){
+  recordQTime();
+  if(SESSION.idx < SESSION.questions.length-1){ SESSION.idx++; renderRunQuestion(); }
+  else{ finishSession(); }
+}
+function submitRunEarly(){
+  if(confirm('Submit now? Unanswered questions count as wrong.')) finishSession();
+}
+
+async function finishSession(){
+  clearInterval(SESSION.timerHandle); clearInterval(SESSION.qTimerHandle);
+  recordQTime();
+  let score=0; const topicMap={};
+  SESSION.questions.forEach((q,i)=>{
+    const correct = SESSION.answers[i]===q.answer;
+    if(correct) score++;
+    if(!topicMap[q.topic]) topicMap[q.topic]={attempted:0, correct:0};
+    topicMap[q.topic].attempted++; if(correct) topicMap[q.topic].correct++;
+
+    if(!ST.practiceStats[q.topic]) ST.practiceStats[q.topic]={attempted:0, correct:0, timeSum:0, best:null};
+    const ps = ST.practiceStats[q.topic];
+    ps.attempted++; if(correct) ps.correct++;
+    ps.timeSum += SESSION.perQTime[i];
+    if(ps.best===null || SESSION.perQTime[i]<ps.best) ps.best = SESSION.perQTime[i];
+
+    const k = qKey(q);
+    if(!correct){
+      ST.mistakeLog.unshift({qKey:k, snapshot:q, wrongAt:Date.now()});
+      if(!ST.wrongQueue.find(w=>w.qKey===k)) ST.wrongQueue.push({qKey:k, snapshot:q, due: Date.now()+86400000, interval:1, addedAt:Date.now()});
+    } else {
+      const wi = ST.wrongQueue.findIndex(w=>w.qKey===k);
+      if(wi>=0){
+        const w = ST.wrongQueue[wi];
+        if(w.interval>=7){ ST.wrongQueue.splice(wi,1); }
+        else { w.interval = w.interval===1?3:7; w.due = Date.now()+w.interval*86400000; }
+      }
+    }
+  });
+  addXP(score*4 + SESSION.questions.length);
+
+  const record = { date: todayStr(), timestamp: Date.now(), mode: SESSION.mode, section: SESSION.sectionKey,
+    score, total: SESSION.questions.length, timeTakenSec: Math.round((Date.now()-SESSION.startTs)/1000), topicMap,
+    perQ: SESSION.questions.map((q,i)=>({topic:q.topic, correct: SESSION.answers[i]===q.answer, timeSec: SESSION.perQTime[i]})) };
+  ST.attempts.push(record);
+  checkBadges();
+  persist();
+
+  if(SESSION.onFinish){ SESSION.onFinish(record); return; }
+  renderResult(record);
+  nav('result');
+}
+
+function renderResult(record){
+  document.getElementById('result-sub').textContent = SESSION.label+' — completed';
+  document.getElementById('result-score-num').textContent = record.score;
+  document.getElementById('result-score-total').textContent = record.total;
+  const pct = Math.round(record.score/record.total*100);
+  document.getElementById('result-acc-bar').style.width = pct+'%';
+  document.getElementById('result-acc-bar').style.background = pct>=70?'var(--good)':pct>=40?'var(--warm)':'var(--danger)';
+  document.getElementById('result-acc-pct').textContent = pct+'%';
+  const avgT = Math.round(record.timeTakenSec/record.total);
+  document.getElementById('result-speed-bar').style.width = Math.min(100, 100-(avgT/90*100))+'%';
+  document.getElementById('result-speed-bar').style.background='var(--accent2)';
+  document.getElementById('result-speed-pct').textContent = avgT+'s/Q';
+  const m=Math.floor(record.timeTakenSec/60), s=record.timeTakenSec%60;
+  document.getElementById('result-time').textContent = `Time taken: ${m}m ${s}s`;
+
+  const topicsWrap = document.getElementById('result-topics'); topicsWrap.innerHTML='';
+  Object.entries(record.topicMap).forEach(([topic,st])=>{
+    const p = Math.round(st.correct/st.attempted*100);
+    const row=document.createElement('div'); row.className='bar-row';
+    row.innerHTML = `<div class="bar-label" style="width:190px;">${topic}</div><div class="bar-track"><div class="bar-fill" style="width:${p}%; background:${p>=70?'var(--good)':p>=40?'var(--warm)':'var(--danger)'};"></div></div><div class="bar-pct">${st.correct}/${st.attempted}</div>`;
+    topicsWrap.appendChild(row);
+  });
+
+  const reviewWrap = document.getElementById('result-review'); reviewWrap.innerHTML='';
+  SESSION.questions.forEach((q,i)=>{
+    const chosen=SESSION.answers[i]; const correct=chosen===q.answer;
+    const div=document.createElement('div'); div.className='review-row';
+    div.innerHTML = `<div class="review-head"><div class="review-q">${i+1}. ${q.q}</div><span class="pill ${correct?'pill-good':'pill-bad'}">${correct?'Correct':'Wrong'}</span></div>
+      <div style="font-size:12px; color:var(--muted);">Your answer: ${chosen!==null?q.opts[chosen]:'— not answered'} &nbsp;|&nbsp; Correct: ${q.opts[q.answer]}</div>
+      <div style="font-size:12px; color:var(--muted); margin-top:6px;"><b style="color:var(--text)">Why:</b> ${q.steps.join(' ')}</div>`;
+    reviewWrap.appendChild(div);
+  });
+
+  const aiBox = document.getElementById('result-ai-content');
+  aiBox.innerHTML = '<span class="ai-loading">Generating analysis...</span>';
+  const weakest = Object.entries(record.topicMap).sort((a,b)=>(a[1].correct/a[1].attempted)-(b[1].correct/b[1].attempted))[0];
+  const prompt = `Give a blunt 3-sentence analysis of this TCS NQT mock attempt: score ${record.score}/${record.total} (${pct}%), avg ${avgT}s per question, weakest topic "${weakest?weakest[0]:'n/a'}" at ${weakest?Math.round(weakest[1].correct/weakest[1].attempted*100):0}% accuracy. No headers, no bullets, direct and specific.`;
+  callClaude(prompt, 250).then(txt=>{ aiBox.textContent = txt; });
+}
+</script>
+<script>
+/* =========================================================================
+   MOCK TEST
+========================================================================= */
+let selectedMockSection = null;
+function renderMockSetup(){
+  selectedMockSection = null;
+  const wrap = document.getElementById('section-picks'); wrap.innerHTML='';
+  Object.keys(SECTION_INFO).forEach(sec=>{
+    const info = SECTION_INFO[sec];
+    const last = [...ST.attempts].reverse().find(a=>a.section===sec && a.mode==='mock-section');
+    const div=document.createElement('div'); div.className='section-pick'; div.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:18px;border:1px solid var(--border);border-radius:14px;background:var(--panel);cursor:pointer;margin-bottom:10px;';
+    div.innerHTML = `<div><div style="font-family:'Space Grotesk';font-weight:700;font-size:15px;">${info.label}</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">${info.count} questions · ${info.minutes} minutes</div></div>
+      <div class="mono" style="font-size:12.5px;color:var(--muted);">${last?'Last: '+last.score+'/'+last.total:'Not attempted'}</div>`;
+    div.addEventListener('click', ()=>{ document.querySelectorAll('#section-picks > div').forEach(p=>p.style.borderColor='var(--border)'); div.style.borderColor='var(--accent)'; selectedMockSection=sec; });
+    wrap.appendChild(div);
+  });
+}
+function startMock(type){
+  if(type==='section'){
+    if(!selectedMockSection){ alert('Pick a section first.'); return; }
+    const info = SECTION_INFO[selectedMockSection];
+    const pool = buildSectionPool(selectedMockSection, info.count);
+    startSession({ mode:'mock-section', sectionKey:selectedMockSection, label:info.label+' Mock', questions:pool, timeLimitSec:info.minutes*60, allowBack:false, showTools:false });
+  } else {
+    startFullMock(['numerical','verbal','reasoning'], []);
+  }
+}
+function startFullMock(queue, results){
+  if(queue.length===0){
+    const combined = { date:todayStr(), timestamp:Date.now(), mode:'mock-full',
+      score: results.reduce((s,r)=>s+r.score,0), total: results.reduce((s,r)=>s+r.total,0),
+      timeTakenSec: results.reduce((s,r)=>s+r.timeTakenSec,0),
+      topicMap: results.reduce((acc,r)=>{ Object.entries(r.topicMap).forEach(([t,v])=>{ if(!acc[t]) acc[t]={attempted:0,correct:0}; acc[t].attempted+=v.attempted; acc[t].correct+=v.correct; }); return acc; },{}),
+      perQ: results.flatMap(r=>r.perQ) };
+    SESSION = { questions: results.flatMap(r=>r._questions), answers: results.flatMap(r=>r._answers), perQTime: results.flatMap(r=>r._perQTime), label:'Full Foundation Mock', startTs: Date.now()-combined.timeTakenSec*1000 };
+    renderResult(combined);
+    nav('result');
+    return;
+  }
+  const sec = queue[0];
+  const info = SECTION_INFO[sec];
+  const pool = buildSectionPool(sec, info.count);
+  startSession({ mode:'full-part', sectionKey:sec, label:'Full Mock — '+info.label, questions:pool, timeLimitSec:info.minutes*60, allowBack:false, showTools:false,
+    onFinish: (record)=>{
+      record._questions = pool; record._answers = SESSION.answers.slice(); record._perQTime = SESSION.perQTime.slice();
+      results.push(record);
+      alert(info.label+' section complete: '+record.score+'/'+record.total+'. Moving to next section.');
+      startFullMock(queue.slice(1), results);
+    }
+  });
+}
+
+/* =========================================================================
+   REVISION
+========================================================================= */
+function dueRevisionCount(){ return ST.wrongQueue.filter(w=>w.due<=Date.now()).length; }
+function renderRevision(){
+  document.getElementById('rev-today-count').textContent = dueRevisionCount();
+  document.getElementById('rev-bookmark-count').textContent = Object.keys(ST.bookmarks).length;
+  document.getElementById('rev-mistake-count').textContent = ST.mistakeLog.length;
+
+  const cal = document.getElementById('rev-calendar');
+  const byDay = {};
+  ST.wrongQueue.forEach(w=>{ const d=new Date(w.due).toISOString().slice(0,10); byDay[d]=(byDay[d]||0)+1; });
+  const days = Object.keys(byDay).sort();
+  cal.innerHTML = days.length===0 ? '<div class="card" style="font-size:13px;color:var(--muted);">Nothing scheduled — your revision queue fills up as you get questions wrong.</div>' :
+    days.slice(0,10).map(d=>`<div class="bar-row"><div class="bar-label">${d}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.min(100,byDay[d]*15)}%; background:var(--purple);"></div></div><div class="bar-pct">${byDay[d]} Qs</div></div>`).join('');
+
+  const nb = document.getElementById('mistake-notebook'); nb.innerHTML='';
+  if(ST.mistakeLog.length===0){ nb.innerHTML = '<div class="card" style="font-size:13px;color:var(--muted);">No mistakes logged yet.</div>'; return; }
+  ST.mistakeLog.slice(0,15).forEach(m=>{
+    const row=document.createElement('div'); row.className='review-row';
+    row.innerHTML = `<div class="review-head"><div class="review-q">${m.snapshot.q}</div><span class="pill pill-muted">${m.snapshot.topic}</span></div>
+      <div style="font-size:12px;color:var(--muted);">Correct answer: ${m.snapshot.opts[m.snapshot.answer]}</div>`;
+    nb.appendChild(row);
+  });
+}
+function startRevisionSession(){
+  const due = ST.wrongQueue.filter(w=>w.due<=Date.now()).map(w=>w.snapshot);
+  if(due.length===0){ alert("Nothing due today — you're caught up."); return; }
+  startSession({ mode:'revision', label:"Today's Revision", questions:due, timeLimitSec:0, allowBack:true, showTools:true });
+}
+
+/* =========================================================================
+   ANALYTICS
+========================================================================= */
+function renderAnalytics(){
+  const allPerQ = ST.attempts.flatMap(a=>a.perQ||[]);
+  if(allPerQ.length){
+    const times = allPerQ.map(p=>p.timeSec);
+    document.getElementById('an-fastest').textContent = Math.min(...times)+'s';
+    document.getElementById('an-slowest').textContent = Math.max(...times)+'s';
+    const totalTime = times.reduce((a,b)=>a+b,0);
+    document.getElementById('an-qpm').textContent = (allPerQ.length/(totalTime/60)).toFixed(1);
+    const avgT = totalTime/allPerQ.length;
+    document.getElementById('an-speedscore').textContent = Math.max(0,Math.round(100-avgT));
+  }
+  const secAcc = document.getElementById('an-section-acc'); secAcc.innerHTML='';
+  Object.keys(SECTION_INFO).forEach(sec=>{
+    const qs = allPerQ.filter(p=>ALL_TOPICS_BY_SECTION[sec].includes(p.topic));
+    const acc = qs.length? Math.round(qs.filter(q=>q.correct).length/qs.length*100):0;
+    secAcc.innerHTML += `<div class="bar-row"><div class="bar-label">${SECTION_INFO[sec].label}</div><div class="bar-track"><div class="bar-fill" style="width:${acc}%; background:${acc>=70?'var(--good)':acc>=40?'var(--warm)':'var(--danger)'};"></div></div><div class="bar-pct">${acc}%</div></div>`;
+  });
+  const topicAcc = document.getElementById('an-topic-acc'); topicAcc.innerHTML='';
+  Object.entries(ST.practiceStats).sort((a,b)=>(a[1].correct/a[1].attempted)-(b[1].correct/b[1].attempted)).forEach(([t,s])=>{
+    const acc = Math.round(s.correct/s.attempted*100);
+    topicAcc.innerHTML += `<div class="bar-row"><div class="bar-label">${t}</div><div class="bar-track"><div class="bar-fill" style="width:${acc}%; background:${acc>=70?'var(--good)':acc>=40?'var(--warm)':'var(--danger)'};"></div></div><div class="bar-pct">${acc}%</div></div>`;
+  });
+
+  const curve = document.getElementById('an-learning-curve');
+  const mocks = ST.attempts.filter(a=>a.mode.startsWith('mock'));
+  if(mocks.length>1){
+    const pts = mocks.map((m,i)=>({x:20+i*(560/(mocks.length-1)), y: 130-(m.score/m.total*120)}));
+    const path = pts.map((p,i)=>(i===0?'M':'L')+p.x+','+p.y).join(' ');
+    curve.innerHTML = `<polyline points="${pts.map(p=>p.x+','+p.y).join(' ')}" fill="none" stroke="var(--accent)" stroke-width="2.5"/>` +
+      pts.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="4" fill="var(--accent2)"/>`).join('');
+  } else { curve.innerHTML = `<text x="20" y="70" fill="var(--muted)" font-size="13">Take 2+ mocks to see your trend.</text>`; }
+
+  const scatter = document.getElementById('an-scatter');
+  if(allPerQ.length>3){
+    const byTopic = {};
+    allPerQ.forEach(p=>{ if(!byTopic[p.topic]) byTopic[p.topic]={t:0,c:0,n:0}; byTopic[p.topic].t+=p.timeSec; byTopic[p.topic].c+=p.correct?1:0; byTopic[p.topic].n++; });
+    const pts = Object.entries(byTopic).map(([t,v])=>({x: Math.min(560,20+(v.t/v.n)*4), y: 200-(v.c/v.n*180), t}));
+    scatter.innerHTML = pts.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="6" fill="var(--purple)" opacity="0.8"><title>${p.t}</title></circle>`).join('') +
+      `<text x="20" y="215" fill="var(--muted2)" font-size="10">→ avg time/q</text><text x="5" y="15" fill="var(--muted2)" font-size="10">accuracy ↑</text>`;
+  } else { scatter.innerHTML = `<text x="20" y="110" fill="var(--muted)" font-size="13">Solve more questions across topics to populate this chart.</text>`; }
+}
+
+/* =========================================================================
+   PLANNER — fixed 20 Jul to 2 Aug schedule
+========================================================================= */
+const PLAN_DATES = (()=>{ const arr=[]; const start=new Date(2026,6,20); for(let i=0;i<14;i++){ const d=new Date(start); d.setDate(start.getDate()+i); arr.push(d); } return arr; })();
+const PLAN_TEMPLATE = [
+  {slot:'Morning', task:'DSA — Code & Debug lecture + problems'},
+  {slot:'Afternoon', task:'Aptitude — 2 hrs, Numerical + Reasoning drills'},
+  {slot:'Evening', task:'SQL practice + 1 topic mock'},
+  {slot:'Night', task:"Spaced-repetition revision + formula cards"}
+];
+function renderPlanner(){
+  const wrap = document.getElementById('plan-days'); wrap.innerHTML='';
+  let done=0, totalTasks=0;
+  PLAN_DATES.forEach((d,di)=>{
+    const dateStr = d.toISOString().slice(0,10);
+    const dayDiv = document.createElement('div'); dayDiv.className='plan-day';
+    let tasksHtml='';
+    PLAN_TEMPLATE.forEach((tpl,ti)=>{
+      const key = 'd'+di+'_'+ti;
+      const checked = !!ST.planChecks[key];
+      totalTasks++; if(checked) done++;
+      tasksHtml += `<div class="plan-task ${checked?'done':''}"><input type="checkbox" id="${key}" ${checked?'checked':''} onchange="togglePlanTask('${key}')"><span class="plan-slot">${tpl.slot}</span><label for="${key}">${tpl.task}</label></div>`;
+    });
+    dayDiv.innerHTML = `<div class="plan-day-head"><div class="plan-day-title">${d.toLocaleDateString('en-US',{weekday:'short', month:'short', day:'numeric'})}</div><span class="pill pill-muted">${dateStr===todayStr()?'Today':''}</span></div>${tasksHtml}`;
+    wrap.appendChild(dayDiv);
+  });
+  document.getElementById('plan-progress-bar').style.width = (totalTasks?Math.round(done/totalTasks*100):0)+'%';
+  document.getElementById('plan-progress-pct').textContent = (totalTasks?Math.round(done/totalTasks*100):0)+'%';
+}
+function togglePlanTask(key){ ST.planChecks[key] = !ST.planChecks[key]; persist(); renderPlanner(); }
+
+/* =========================================================================
+   FORMULA CARDS
+========================================================================= */
+function renderFormulaCards(){
+  const wrap = document.getElementById('formula-cards'); wrap.innerHTML='';
+  Object.entries(TOPIC_META).forEach(([topic,meta])=>{
+    const div=document.createElement('div'); div.className='card';
+    div.innerHTML = `<div class="section-title">${topic} <span class="pill pill-accent2">${meta.freq}</span></div>
+      <div style="font-size:12.5px; color:var(--muted); margin-bottom:8px;"><b style="color:var(--text);">Formula:</b> ${meta.formula}</div>
+      <div style="font-size:12.5px; color:var(--muted);"><b style="color:var(--text);">Shortcut:</b> ${meta.shortcut}</div>`;
+    wrap.appendChild(div);
+  });
+}
+
+/* =========================================================================
+   EMAIL WRITING (real AI grading)
+========================================================================= */
+let currentEmailScenario = EMAIL_SCENARIOS[0];
+function renderEmailWriting(){ newEmailScenario(); document.getElementById('email-ai-result').style.display='none'; }
+function newEmailScenario(){
+  currentEmailScenario = pick(EMAIL_SCENARIOS);
+  document.getElementById('email-scenario-text').textContent = currentEmailScenario;
+  document.getElementById('email-answer').value='';
+  document.getElementById('email-wordcount').textContent='0 words';
+  document.getElementById('email-ai-result').style.display='none';
+}
+document.addEventListener('input', e=>{
+  if(e.target && e.target.id==='email-answer'){
+    const words = e.target.value.trim().split(/\s+/).filter(Boolean).length;
+    document.getElementById('email-wordcount').textContent = words+' words';
+  }
+});
+async function evaluateEmail(){
+  const text = document.getElementById('email-answer').value.trim();
+  if(text.split(/\s+/).filter(Boolean).length<20){ alert('Write at least a short paragraph before submitting.'); return; }
+  const box = document.getElementById('email-ai-result'); box.style.display='block';
+  document.getElementById('email-ai-content').innerHTML = '<span class="ai-loading">Evaluating...</span>';
+  const prompt = `You are grading a professional email for TCS NQT exam prep. Scenario: "${currentEmailScenario}"\n\nStudent's email:\n"""${text}"""\n\nGive scores out of 10 for Grammar, Vocabulary, Professional Tone, and Structure, each on its own line like "Grammar: 8/10 — reason". Then one line "Word count: X (target 100+)". Then 2-3 sentences of direct, specific improvement suggestions. No markdown headers.`;
+  const result = await callClaude(prompt, 500);
+  document.getElementById('email-ai-content').innerHTML = result.replace(/\n/g,'<br>');
+  addXP(15); persist();
+}
+
+/* =========================================================================
+   PASSAGE RECALL (real AI grading)
+========================================================================= */
+let passageState = null;
+function startPassageRecall(){
+  const passage = pick(PASSAGES);
+  passageState = { passage, stage:'reading' };
+  const area = document.getElementById('passage-stage-area');
+  document.getElementById('passage-ai-result').style.display='none';
+  area.innerHTML = `<div style="font-size:14px; line-height:1.7;">${passage}</div><div class="mono" style="margin-top:10px; color:var(--warm);" id="passage-countdown">Hiding in 30s...</div>`;
+  let t=30;
+  const iv = setInterval(()=>{
+    t--; document.getElementById('passage-countdown').textContent = `Hiding in ${t}s...`;
+    if(t<=0){ clearInterval(iv); showRewriteStage(); }
+  },1000);
+}
+function showRewriteStage(){
+  const area = document.getElementById('passage-stage-area');
+  area.innerHTML = `<textarea class="note-area" id="passage-rewrite" style="min-height:160px;" placeholder="Rewrite the passage from memory..."></textarea>
+    <div class="mono" style="margin-top:8px; color:var(--warm);" id="rewrite-countdown">90s remaining</div>
+    <button class="btn btn-primary" style="margin-top:10px;" onclick="submitPassageRecall()">Submit now</button>`;
+  let t=90;
+  passageState.rewriteTimer = setInterval(()=>{
+    t--; const el=document.getElementById('rewrite-countdown'); if(el) el.textContent = t+'s remaining';
+    if(t<=0){ clearInterval(passageState.rewriteTimer); submitPassageRecall(); }
+  },1000);
+}
+async function submitPassageRecall(){
+  clearInterval(passageState.rewriteTimer);
+  const rewriteEl = document.getElementById('passage-rewrite');
+  const rewrite = rewriteEl ? rewriteEl.value.trim() : '';
+  document.getElementById('passage-stage-area').innerHTML = '<div style="font-size:13px;color:var(--muted);">Submitted.</div>';
+  const box = document.getElementById('passage-ai-result'); box.style.display='block';
+  document.getElementById('passage-ai-content').innerHTML = '<span class="ai-loading">Evaluating recall...</span>';
+  const prompt = `Original passage:\n"""${passageState.passage}"""\n\nStudent's rewrite from memory:\n"""${rewrite||'(nothing written)'}"""\n\nGive: "Recall %: X" (how much core meaning was retained), "Grammar: X/10", "Meaning Retention: short note". Then one direct sentence of feedback. No markdown headers.`;
+  const result = await callClaude(prompt, 350);
+  document.getElementById('passage-ai-content').innerHTML = result.replace(/\n/g,'<br>');
+  addXP(15); persist();
+}
+function renderPassageRecall(){ document.getElementById('passage-stage-area').innerHTML=''; document.getElementById('passage-ai-result').style.display='none'; }
+
+/* =========================================================================
+   BADGES
+========================================================================= */
+function renderBadges(){
+  const wrap = document.getElementById('badge-grid'); wrap.innerHTML='';
+  BADGE_DEFS.forEach(b=>{
+    const earned = ST.earnedBadges.includes(b.id);
+    const div=document.createElement('div'); div.className='badge'+(earned?' earned':'');
+    div.innerHTML = `<div class="ic">${b.ic}</div><div class="n">${b.n}</div>`;
+    wrap.appendChild(div);
+  });
+}
+
+/* =========================================================================
+   INIT
+========================================================================= */
+(async function init(){
+  await loadAll();
+  renderDashboard();
+  fetchAIRecommendation();
+})();
+</script>
+</body>
+</html>
